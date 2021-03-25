@@ -7,7 +7,7 @@ const {stringify}   = require("querystring")
 const bodyParser    = require("body-parser")
 const Question      = require("../models/question")
 const Room          = require("../models/room");
-const Flagged       = require("../models/flaggedPassword")
+const Password      = require("../models/password")
 
 router = express.Router(); 
 
@@ -65,7 +65,7 @@ router.post("/createroom/", async(req, res) => {
         bannedIds: [],
         flaggedPasswords: [],
         adminPassword: adminPassword,
-        passwordList: [],
+        // passwordList: [], deprecated
 
     })
 
@@ -81,12 +81,13 @@ router.post("/createroom/", async(req, res) => {
 })
 
 router.post("/joinroom/", async(req, res) =>{
+    
     if(
         req.body.captcha === undefined ||
         req.body.captcha === "" ||
         req.body.captcha === null
     ){
-        return res.send({success: false, msg: "Please complete captcha"})
+        // return res.send({success: false, msg: "Please complete captcha"})
     }
     const query = stringify({
         secret: secretKey,
@@ -102,7 +103,7 @@ router.post("/joinroom/", async(req, res) =>{
     // console.log(body)
 
     if(body.success !== true){
-        return res.send({success: false, msg: "Failed to complete captcha."})
+        // return res.send({success: false, msg: "Failed to complete captcha."})
     }
 
     
@@ -114,7 +115,7 @@ router.post("/joinroom/", async(req, res) =>{
     let existingRoom
 
     // if(req.body.room is not a possible room, cancel everything)
-    //not really necessary with captcha in place, but maybe in the future.
+    // not really necessary with captcha in place, but maybe in the future.
 
     //finds the room with code provided.
     try{
@@ -148,47 +149,59 @@ router.post("/joinroom/", async(req, res) =>{
 
     //if not too old (which means its currently active), check the password list.
     let access = false; //used to check if password sent matches with one in the database.
+
     //if client sent a password
     if(req.body.existingPassword !== undefined){ //if join WITH password, regardless of it being fake or not.
-        let passwordList = existingRoom[0].passwordList;
-        let userId;
-        if(passwordList.length === 0){ //if no passwords are saved in the database
-            // do nothing, access is false by default.
+        
+      
+        // console.log("found password: " + password) 
+        // console.log("clients sent password: " + req.body.existingPassword)
+    
+        
+        
+        // if(password.length === 0){ //if no passwords are saved in the database
+        //     // do nothing, access is false by default.
             
-        }else{
-            for (let i = 0; i < passwordList.length; i++) {
-                const pw = passwordList[i];
-                if(pw.password === req.body.existingPassword){
-                    access = true;
-                    userId = pw.id;
-                    break;
-                }
-            }
+        // }else{ //checks if the password is legit
+
+
+
+
+        //     // for (let i = 0; i < passwordList.length; i++) {
+        //     //     const pw = passwordList[i];
+        //     //     if(pw.password === req.body.existingPassword){
+        //     //         access = true;
+        //     //         userId = pw.id;
+        //     //         break;
+        //     //     }
+        //     // }
+        // }
+
+        if(password.password === req.body.existingPassword){
+            return res.send({success: true, roomId: req.body.room, userId: password.userId, msg: "Your password was correct"})
+
         }
-        if(access == true){ //if passwords match
-            return res.send({success: true, roomId: req.body.room, userId: userId, msg: "Your password was correct"})
-        }
+        
     }
 
     if(access == false){ //if you either dont have a password, or the one you sent doesnt match:
             
         let newPassword = uuidv4();
         let newUserId = CodeGenerator(2);
-        let d = Date.now()
-        let newObject = {
-            password: newPassword,
-            id: newUserId,
-            lastActive: d
-        }
-        existingRoom[0].passwordList.push(newObject)
-        try{
-            
-            await existingRoom[0].save();
 
+        const passwordObject = new Password({
+            roomId: req.body.room,
+            password: newPassword,
+            lastActive: 69420,
+            userId: newUserId,
+        })
+
+        try{ 
+            await passwordObject.save();
         }catch(err){
             return res.send({ success: false, msg: "Error saving password." })
         }
-        
+        console.log(newUserId)
         return res.send({success: true, roomId: req.body.room, userId: newUserId, newPassword: newPassword, msg:"Wrong or no password, here's a new one."})
     }   
 })
@@ -253,18 +266,20 @@ router.post("/postquestion/", async(req, res) => {
         const pw = passwordList[i];
         if(today - pw.lastActive < 3000){ //if its less than 3 seconds since i tried to post something
             //ban the password for breaking the front end security
-            const 
+            room[0].passwordList[i].lastActive = 1234
         }
     }
-    //
+
+    room.save()
+    
+
 
 
 
     //todo: remove the fukcing shit make passwordList a collection everything else is horrible.
     //thats here. when creating a 
 
-    fuck
-
+    
 
 
     //

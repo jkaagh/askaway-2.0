@@ -10,19 +10,19 @@ const RoomSchema = new mongoose.Schema({
         type: Array,
         require: false
     },
-    flaggedPasswords: { //and array of passwords that are flagged for spam.
-        type: Array,
-        require: false
-    },
+    // deprecated: used elsewhere for performance
+    // flaggedPasswords: { //and array of passwords that are flagged for spam.
+    //     type: Array,
+    //     require: false
+    // },
     adminPassword:{ 
         type: String,
         require: true
-
     },
-    passwordList: {
-        type: Array,
-        require: false
-    },
+    // passwordList: { //deprecated
+    //     type: Array,
+    //     require: false
+    // },
     createdDate: {
         type: Date,
         require: true,
@@ -46,4 +46,5 @@ module.exports = mongoose.model("room", RoomSchema)
 //     }
 // ] 
 // i could put this array of objects like their own schema. but i
-//already did that so now i'm trying both options out.
+// already did that so now i'm trying both options out. 
+// update: holy shit that fucking sucks. nope.

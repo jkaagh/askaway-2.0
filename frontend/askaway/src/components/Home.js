@@ -49,6 +49,7 @@ export default function Home() {
         // console.log(existingPassword)
         Axios.post("http://localhost:3001/joinroom", {captcha: captchaValue, existingPassword: existingPassword, room: inputValue})
         .then((response) => {
+            console.log(response.data)
             if(response.data.success === false){
                 setCaptchaWarning(response.data.msg)
                 console.log(response.data)
