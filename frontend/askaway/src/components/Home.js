@@ -1,12 +1,15 @@
 import React, {useState} from 'react'
-import {Link} from "react-router-dom"
+import {Link, useHistory} from "react-router-dom"
 import Axios from "axios"
 import ReCaptcha from "react-google-recaptcha"
+import cookie from 'react-cookies'
 
 export default function Home() {
+    let history = useHistory();
 
     const [inputValue, setInputValue] = useState()
     const [createText, setCreateText] = useState("Or create a room...")
+    const [joinText, setJoinText] = useState("Join")
     const [captchaValue, setCaptchaValue] = useState()
     const [captchaWarning, setCaptchaWarning] = useState()
 
@@ -23,10 +26,48 @@ export default function Home() {
                 setCaptchaWarning(response.data.msg)
                 console.log(response.data)
             }
+            if(response.data.roomCreated === true){
+                let d = new Date();
+                let time = d.getTime()
+                let tomorrow = time + 86400000 // + 24 hours
+                d = new Date(tomorrow);
+
+                document.cookie = "adminPassword" + response.data.roomId + "=" + response.data.adminPassword + "; expires=" + d + ""
+                history.push("/host/" + response.data.roomId + "")
+
+            }
             console.log(response.data)
 
             
             //redirect to subpage todo
+        })
+    }
+
+    const handleJoin = () => {
+        setJoinText("Loading...");
+        let existingPassword = cookie.load("userPassword" + inputValue + "");
+        // console.log(existingPassword)
+        Axios.post("http://localhost:3001/joinroom", {captcha: captchaValue, existingPassword: existingPassword, room: inputValue})
+        .then((response) => {
+            if(response.data.success === false){
+                setCaptchaWarning(response.data.msg)
+                console.log(response.data)
+            }
+            console.log(response.data)
+            if(response.data.newPassword != undefined){ //this runs if user sent wrong or no password
+                let d = new Date();
+                let time = d.getTime()
+                let tomorrow = time + 86400000 // + 24 hours
+                d = new Date(tomorrow);
+
+                document.cookie = "userPassword"    + response.data.roomId      + "="   + response.data.newPassword + "; expires=" + d + ""
+                document.cookie = "userId"          + response.data.roomId      + "="   + response.data.userId      + "; expires=" + d + ""
+            }
+            if(response.data.success === true){
+                history.push("/room/" + response.data.roomId + "")
+            }
+
+            
         })
     }
 
@@ -63,9 +104,9 @@ export default function Home() {
             <span className="text-danger d-block">
                     {captchaWarning}
                 </span>
-            <Link to={"/room/" + inputValue}> 
-                <button className="btn btn-primary px-4 m-4">Join</button>
-            </Link>
+            
+                <button onClick={handleJoin} className="btn btn-primary px-4 m-4">{joinText}</button>
+            
         </div>
 
         <div className="container">

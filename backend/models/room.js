@@ -10,6 +10,10 @@ const RoomSchema = new mongoose.Schema({
         type: Array,
         require: false
     },
+    flaggedPasswords: { //and array of passwords that are flagged for spam.
+        type: Array,
+        require: false
+    },
     adminPassword:{ 
         type: String,
         require: true
@@ -38,6 +42,7 @@ module.exports = mongoose.model("room", RoomSchema)
 //     {
 //         password: "asd2d19sasdls9mzjdas",
 //         id: "QK"
+//         lastActive: timestamp
 //     }
 // ] 
 // i could put this array of objects like their own schema. but i

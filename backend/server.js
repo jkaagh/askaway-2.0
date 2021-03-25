@@ -1,5 +1,6 @@
 require("dotenv").config();
 
+const socket = require("socket.io")
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
@@ -17,4 +18,10 @@ app.use(cors())
 const Routes = require("./routes/route")
 app.use("/", Routes)
 
-app.listen(3001, () => console.log("Server started"))
+const server = app.listen(3001, () => console.log("Server started"))
+
+var io = socket(server)
+
+io.on("connection", function(socket){
+    console.log("socket connected")
+})
