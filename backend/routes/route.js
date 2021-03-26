@@ -8,7 +8,7 @@ const bodyParser    = require("body-parser")
 const Question      = require("../models/question")
 const Room          = require("../models/room");
 const Password      = require("../models/password")
-
+const Flagged       = require("../models/flaggedPassword")
 router = express.Router(); 
 
 const secretKey = process.env.PRIVATE_KEY
@@ -148,62 +148,39 @@ router.post("/joinroom/", async(req, res) =>{
 
 
     //if not too old (which means its currently active), check the password list.
-    let access = false; //used to check if password sent matches with one in the database.
 
     //if client sent a password
-    if(req.body.existingPassword !== undefined){ //if join WITH password, regardless of it being fake or not.
+    if(req.body.existingPassword !== undefined){ 
         
-      
-        // console.log("found password: " + password) 
-        // console.log("clients sent password: " + req.body.existingPassword)
-    
-        
-        
-        // if(password.length === 0){ //if no passwords are saved in the database
-        //     // do nothing, access is false by default.
-            
-        // }else{ //checks if the password is legit
-
-
-
-
-        //     // for (let i = 0; i < passwordList.length; i++) {
-        //     //     const pw = passwordList[i];
-        //     //     if(pw.password === req.body.existingPassword){
-        //     //         access = true;
-        //     //         userId = pw.id;
-        //     //         break;
-        //     //     }
-        //     // }
-        // }
-
-        if(password.password === req.body.existingPassword){
-            return res.send({success: true, roomId: req.body.room, userId: password.userId, msg: "Your password was correct"})
-
+        let password
+        try{
+            password = await Password.find({password: req.body.existingPassword}) 
+        }catch(err){
+            return res.send({ success: false, msg:"Error: Couldn't find any room."})
         }
-        
+        if(password[0].password === req.body.existingPassword){
+            return res.send({success: true, roomId: req.body.room, userId: password[0].userId, msg: "Your password was correct"})
+        }
+
     }
 
-    if(access == false){ //if you either dont have a password, or the one you sent doesnt match:
-            
-        let newPassword = uuidv4();
-        let newUserId = CodeGenerator(2);
+    //if password is not found, or does not match
+    let newPassword = uuidv4();
+    let newUserId = CodeGenerator(2);
 
-        const passwordObject = new Password({
-            roomId: req.body.room,
-            password: newPassword,
-            lastActive: 69420,
-            userId: newUserId,
-        })
+    const passwordObject = new Password({
+        roomId: req.body.room,
+        password: newPassword,
+        lastActive: 69420,
+        userId: newUserId,
+    })
 
-        try{ 
-            await passwordObject.save();
-        }catch(err){
-            return res.send({ success: false, msg: "Error saving password." })
-        }
-        console.log(newUserId)
-        return res.send({success: true, roomId: req.body.room, userId: newUserId, newPassword: newPassword, msg:"Wrong or no password, here's a new one."})
-    }   
+    try{ 
+        await passwordObject.save();
+    }catch(err){
+        return res.send({ success: false, msg: "Error saving password." })
+    }
+    return res.send({success: true, roomId: req.body.room, userId: newUserId, newPassword: newPassword, msg:"Wrong or no password, here's a new one."})
 })
 
 router.post("/postquestion/", async(req, res) => {
@@ -224,32 +201,12 @@ router.post("/postquestion/", async(req, res) => {
     }   
 
     // if a password is found (which means this password is banned)
-    if(password.length != 0){
+    if(password.length != []){
         return res.send("youre banned kid!")
         // then never do anything
     }
-    
 
-
-    // deprecated?
-    // //check flaggedPasswords if password is flagged
-    // if(room.flaggedPasswords.length != 0){
-    //     for (let i = 0; i < flaggedPasswords.length; i++) {
-    //         const pw = flaggedPasswords[i]; 
-    //     }
-    // }
-
-    // const banned = new Flagged({
-    //     roomId: req.body.roomId,
-    //     password: req.body.password
-    // })
-    // try{
-    //     banned.save()
-    // }catch(err){
-
-    // }
-    
-
+   
     //get room
     let room 
     try{
