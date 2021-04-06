@@ -17,7 +17,7 @@ export default function Room(props) {
     const handlePost = () => {
         
         let password = cookie.load("userPassword" + roomId + "")
-        Axios.post("http://localhost:3001/postquestion/", {password: password, roomId: roomId })
+        Axios.post("http://localhost:3001/postquestion/", {password: password, roomId: roomId, question: inputValue })
         .then((response) =>{
             console.log(response.data)
         })

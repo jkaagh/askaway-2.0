@@ -192,67 +192,74 @@ router.post("/postquestion/", async(req, res) => {
         return res.send({success: false, msg: "Error: Try joining the room from the front page, or double check that the code is correct."})
     }
 
-    let password
+    let bannedPassword
     //finds flagged password that matches.
     try{
-        password = await Flagged.find({password: req.body.password});
+        bannedPassword = await Flagged.find({password: req.body.password});
     }catch(err){
         return res.send({success: false, msg: "An error occurred"})
     }   
 
     // if a password is found (which means this password is banned)
-    if(password.length != []){
-        return res.send("youre banned kid!")
+    if(bannedPassword.length != []){
+        return res.send({success: true, msg: "Successfully posted question!"}) //this sends the exact same thing as if the question was published.
         // then never do anything
     }
 
-   
-    //get room
-    let room 
+    //checks if user bypassed client side charachter amount restriction
+    if(req.body.question.length > 200){
+        return res.send({success: false, msg: "Error: Message too long."})
+    }
+
+    //get password from database matching what user sent.
+    let password
     try{
-        room = await Room.find({roomId: req.body.roomId});
+        password = await Password.find({password: req.body.password});
     }catch(err){
-        return res.send({success: false, msg: "Error: Couldn't find the room. Maybe the room expired?"})
+        return res.send({success: false, msg: "Error: Error finding password."})
     }
     
-    //check in passwordList for if its too early to post.
-    let passwordList = room[0].passwordList
+    //if password doesnt exist in the database.
+    if(password.length == 0){
+        return res.send({success: false, msg: "Error: Wrong password"})
+    }
+
+    //check the password object for lastActive if its too early to post
     let d = new Date()
     let today = d.getTime()
-    for (let i = 0; i < passwordList.length; i++) {
-        const pw = passwordList[i];
-        if(today - pw.lastActive < 3000){ //if its less than 3 seconds since i tried to post something
-            //ban the password for breaking the front end security
-            room[0].passwordList[i].lastActive = 1234
+    console.log(today - password[0].lastActive)
+    //if earlier than 2.5 seconds since last post, ban user. (clientside is 3 seconds)
+    if(today - password[0].lastActive < 2500){ 
+        const newFlagged = new Flagged({
+            password: req.body.password,
+            roomId: req.body.roomId
+        })
+        try{
+            await newFlagged.save()
+        }catch(err){
+
         }
+        return res.send({success: true, msg: "Successfully posted question!"})
+    
     }
 
-    room.save()
-    
-
-
-
-
-    //todo: remove the fukcing shit make passwordList a collection everything else is horrible.
-    //thats here. when creating a 
-
-    
-
-
-    //
-
-    //if it is, flag password and send back to client that captcha is required.
-
-    //grab room object, look in banned passwords
-
-    //if password banned, return the same as if it wasnt.
-
-    //look in passwordList
-
-    //check if password is correct.
+    //update lastactive.
+    password[0].lastActive = today
+    try{
+        await password[0].save()
+    }catch(err){
+        console.log(err)
+    }
 
     //post new question to database.
+    const question = new Question({
+        question: req.body.question,
+        userId: password[0].userId,
+        roomId: req.body.roomId
+    })
 
+    question.save();
+    return res.send({success: true, msg: "Successfully posted question!"})
 
 })
 
@@ -260,7 +267,7 @@ router.post("/postquestion/", async(req, res) => {
 
 
 function CodeGenerator(codeLength){
-    let chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"; // 456,976 different rooms
+    let chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"; // 456,976 different room combinations with 4 letters.
     let length = chars.length;
     let result = "";    
     for (let i = 0; i < codeLength; i++) {

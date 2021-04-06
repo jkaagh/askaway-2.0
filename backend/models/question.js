@@ -6,7 +6,11 @@ const QuestionSchema = new mongoose.Schema({
         type: String,
         require: true
     },
-    askerId:{
+    userId:{
+        type: String,
+        require: true
+    },
+    roomId: {
         type: String,
         require: true
     }
