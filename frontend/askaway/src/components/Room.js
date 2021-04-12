@@ -12,6 +12,7 @@ export default function Room(props) {
     const [inputValue, setInputValue] = useState("")
     useEffect(() => {
         setUserId(cookie.load("userId" + roomId + ""))
+        console.log(props)
     }, [])
 
     const handlePost = () => {
@@ -20,6 +21,12 @@ export default function Room(props) {
         Axios.post("http://localhost:3001/postquestion/", {password: password, roomId: roomId, question: inputValue })
         .then((response) =>{
             console.log(response.data)
+            if(response.data.success === false){
+                setMessage(response.data.msg)
+            }
+            else{
+                setInputValue("")
+            }
         })
     }
     
@@ -28,9 +35,14 @@ export default function Room(props) {
         <div className="container">
             <h3 className="pt-4">Room Code: {roomId}</h3>
             <h4 className="pb-4">Your ID: {userId}</h4>
-            <textarea onChange={(e) => setInputValue(e.target.value)} type="text" rows="5" maxLength="200" className="form-control" placeholder="Type your question here" aria-label="" aria-describedby="basic-addon1>" />
+            <textarea onChange={(e) => setInputValue(e.target.value)} value={inputValue} type="text" rows="5" maxLength="200" className="form-control" placeholder="Type your question here" aria-label="" aria-describedby="basic-addon1>" />
+            
+            <span className="text-danger d-block">
+                {message}
+            </span>
+
             <button onClick={handlePost} id="btnAskQuestion" className="btn btn-outline-primary mt-3 px-4" type="button">Ask away!</button>
-            {message}
+           
         </div>
     </div>
     )

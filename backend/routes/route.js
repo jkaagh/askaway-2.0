@@ -9,6 +9,8 @@ const Question      = require("../models/question")
 const Room          = require("../models/room");
 const Password      = require("../models/password")
 const Flagged       = require("../models/flaggedPassword")
+const expressWs     = require("express-ws")
+const io            = require("socket.io")();
 router = express.Router(); 
 
 const secretKey = process.env.PRIVATE_KEY
@@ -82,7 +84,7 @@ router.post("/createroom/", async(req, res) => {
 
 router.post("/joinroom/", async(req, res) =>{
     
-    if(
+    if( 
         req.body.captcha === undefined ||
         req.body.captcha === "" ||
         req.body.captcha === null
@@ -91,7 +93,7 @@ router.post("/joinroom/", async(req, res) =>{
     }
     const query = stringify({
         secret: secretKey,
-        response: req.body.captcha,
+        response: req.body.captcha,   
         remoteip: req.connection.remoteAddress
       });
 
@@ -262,6 +264,12 @@ router.post("/postquestion/", async(req, res) => {
     return res.send({success: true, msg: "Successfully posted question!"})
 
 })
+
+// //websocket for getting questions 
+// router.ws("/getquestions", async(ws, req) => {
+
+// })
+
 
 
 

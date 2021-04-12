@@ -1,9 +1,9 @@
-import React, {useState} from 'react'
-import {Link, useHistory} from "react-router-dom"
+import React, {useState, useEffect} from 'react'
+import {useHistory} from "react-router-dom"
 import Axios from "axios"
 import ReCaptcha from "react-google-recaptcha"
 import cookie from 'react-cookies'
-
+import PreviousRoom from "./PreviousRoom"
 export default function Home() {
     let history = useHistory();
 
@@ -12,6 +12,8 @@ export default function Home() {
     const [joinText, setJoinText] = useState("Join")
     const [captchaValue, setCaptchaValue] = useState()
     const [captchaWarning, setCaptchaWarning] = useState()
+
+  
 
     const handleChange = (target) => {        
         setInputValue(target.toUpperCase())
@@ -33,6 +35,7 @@ export default function Home() {
                 d = new Date(tomorrow);
 
                 document.cookie = "adminPassword" + response.data.roomId + "=" + response.data.adminPassword + "; expires=" + d + ""
+                document.cookie = "PreviousRoom=" + response.data.roomId + "; expires=" + d + ""
                 history.push("/host/" + response.data.roomId + "")
 
             }
@@ -113,6 +116,8 @@ export default function Home() {
                 <button onClick={handleCreate} className="btn btn-link alert-link">{createText}</button>
             {/* </Link> */}
         </div>
+
+        <PreviousRoom/>
     </div>
     )
 }

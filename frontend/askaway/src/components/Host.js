@@ -1,4 +1,5 @@
 import React, {useState, useEffect} from 'react'
+import {io} from "socket.io-client"
 //as soon as i load the room, check for user and admin password. do server calls dependant on which one i find.
 //user only posts, admin can also request from server.
 export default function Room(props) {
