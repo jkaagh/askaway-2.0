@@ -1,11 +1,16 @@
-import React, {useState, useEffect} from 'react'
+import React, {useState, useEffect, useRef} from 'react'
 import {io} from "socket.io-client"
-//as soon as i load the room, check for user and admin password. do server calls dependant on which one i find.
-//user only posts, admin can also request from server.
 export default function Room(props) {
 
     const [roomId, setRoomId] = useState(props.match.params.id);
 
+    const socketRef = useRef()
+
+    useEffect(() => {
+        //connect to the server
+        socketRef.current = io.connect("http://localhost:3001") //hvad er .current?
+        
+    }, [])
     
     
     return (
