@@ -23,5 +23,5 @@ const server = app.listen(3001, () => console.log("Server started"))
 var io = socket(server)
 
 io.on("connection", function(socket){
-    console.log("socket connected")
+    console.log("New WS Connection...")
 })
