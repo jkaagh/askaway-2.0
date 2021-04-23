@@ -1,15 +1,22 @@
 import React, {useState, useEffect, useRef} from 'react'
-import {io} from "socket.io-client"
+import io from "socket.io-client"
 export default function Room(props) {
 
     const [roomId, setRoomId] = useState(props.match.params.id);
 
-    const socketRef = useRef()
+    const socketRef = useRef();
+	// const socket = io("")
+	const socket = io("ws://localhost:3001", {
+		withCredentials: true,
+		extraHeaders: {
+			"my-custom-header": "abcd",
+		},
+	});
 
     useEffect(() => {
-        //connect to the server
-        socketRef.current = io.connect("http://localhost:3001") //hvad er .current?
-        
+        // connect to the server
+        // socketRef.current = io.connect("http://localhost:3001/") //hvad er .current?
+        // console.log("ass")
     }, [])
     
     
