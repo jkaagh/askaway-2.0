@@ -17,28 +17,30 @@ const app = express();
 const server = http.createServer(app)
 
 
-//i copy pasted this, i dont know what it does
-const whitelist = ['http://localhost:3001'];
-const corsOptions = {
-  credentials: true, // This is important.
-  origin: (origin, callback) => {
-    if(whitelist.includes(origin))
-      return callback(null, true)
+// //i copy pasted this, i dont know what it does
+// const whitelist = ['http://localhost:3001'];
+// const corsOptions = {
+//   credentials: true, // This is important.
+//   origin: (origin, callback) => {
+//     if(whitelist.includes(origin))
+//       return callback(null, true)
 
-      callback(new Error('Not allowed by CORS'));
-  }
-}
+//       callback(new Error('Not allowed by CORS'));
+//   }
+// }
 
 
 //what is this for?
 app.use(express.json())
-app.use(cors(corsOptions))
+// app.use(cors(corsOptions))
+app.use(cors)
+
 const options = {
     cors:true,
     origins:["http://localhost:3001"]
 };
 
-const io = require("socket.io")(server);
+const io = require("socket.io")(server, options);
 
 
 //enable me to use routes in another file.
