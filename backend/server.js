@@ -28,7 +28,7 @@ const io = require('socket.io')(server, options);
 // var io = socket(server)
 
 io.on("connection", function(socket){
-    console.log("New WS Connection...")
+    console.log(socket)
 })
 
-server.listen(3001);
+server.listen(3001, () => console.log("Server started"));
