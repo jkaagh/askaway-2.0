@@ -16,6 +16,7 @@ db.once("open", () => console.log("Connected to database"))
 const app = express();
 const server = http.createServer(app)
 
+var allowedOrigins = "http://localhost:* http://127.0.0.1:*";
 
 // //i copy pasted this, i dont know what it does
 // const whitelist = ['http://localhost:3001'];
@@ -37,7 +38,7 @@ app.use(cors)
 
 const options = {
     cors:true,
-    origins:["http://localhost:3001"]
+    origins:["http://localhost:3000"]
 };
 
 const io = require("socket.io")(server, options);
@@ -50,6 +51,7 @@ app.use("/", Routes)
 //when a connection is established with any client
 io.on("connection", socket =>{
     console.log("New WS Connection...")
+    
 })
 
 //boot up server on specified port and run a log.
