@@ -9,8 +9,6 @@ const Question      = require("../models/question")
 const Room          = require("../models/room");
 const Password      = require("../models/password")
 const Flagged       = require("../models/flaggedPassword")
-const expressWs     = require("express-ws")
-const io            = require("socket.io")();
 router = express.Router(); 
 
 const secretKey = process.env.PRIVATE_KEY
@@ -261,7 +259,10 @@ router.post("/postquestion/", async(req, res) => {
     })
 
     question.save();
+
+    
     return res.send({success: true, msg: "Successfully posted question!"})
+
 
 })
 

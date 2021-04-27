@@ -19,6 +19,10 @@ const RoomSchema = new mongoose.Schema({
         type: String,
         require: true
     },
+    adminSocketId:{ //this is used to know which socket to send data to.
+        type: String,
+        require: false
+    },
     // passwordList: { //deprecated
     //     type: Array,
     //     require: false
