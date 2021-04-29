@@ -238,8 +238,8 @@ router.post("/postquestion/", async(req, res) => {
             await newFlagged.save()
         }catch(err){
 
+            return res.send({success: true, msg: "Successfully posted question!"})
         }
-        return res.send({success: true, msg: "Successfully posted question!"})
     
     }
 
@@ -259,7 +259,6 @@ router.post("/postquestion/", async(req, res) => {
     })
 
     question.save();
-
     
     return res.send({success: true, msg: "Successfully posted question!"})
 

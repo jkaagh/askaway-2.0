@@ -37,6 +37,16 @@ const options={
 }
 const io = require('socket.io')(server, options);
 
+
+
+const Flagged       = require("./models/flaggedPassword")
+const Password      = require("./models/password")
+const Question      = require("./models/question")
+
+
+
+
+
 io.on("connection", function(socket){
     console.log("New WS connection")
 
@@ -52,14 +62,116 @@ io.on("connection", function(socket){
         //maybe put this sockets ID into a file on the database, 
     })
 
-    socket.on("postQuestion", function(data){
-        // do the post question i did in route here
+    socket.on("postQuestion", async function(data){
+		// do the post question i did in route here
 
-        //check if client sent a password.
+		console.log(data);
+		//check if client sent a password.
+		if (data.password === undefined) {
+			return socket.emit("RoomMessage", {
+				success: false,
+				msg:
+					"Error: Try joining the room from the front page, or double check that the code is correct.",
+			});
+		}
 
-        if(data.password === undefined){
-            return res.send({success: false, msg: "Error: Try joining the room from the front page, or double check that the code is correct."})
+		let bannedPassword;
+		//finds flagged password that matches.
+		try {
+			bannedPassword = await Flagged.find({ password: data.password });
+		} catch (err) {
+			return socket.emit("RoomMessage", {
+				success: false,
+				msg: "A server error occured.",
+			});
+		}
+		console.log(bannedPassword);
+
+		// if a password is found (which means this password is banned)
+		if (bannedPassword.length != []) {
+			return socket.emit("RoomMessage", {
+				success: true,
+				msg: "Successfully posted question!",
+			});
+
+			//this sends the exact same thing as if the question was published.
+			// then never do anything
+		}
+
+		//checks if user bypassed client side charachter amount restriction
+		if (data.question.length > 200) {
+			return socket.emit("RoomMessage", {
+				success: false,
+				msg: "Not so fast",
+			});
+		}
+
+		//get password from database matching what user sent.
+		let password;
+		try {
+			password = await Password.find({ password: data.password });
+		} catch (err) {
+			return socket.emit("RoomMessage", {
+				success: false,
+				msg: "Error: Error finding password.",
+			});
+		}
+		console.log(password);
+
+		//if password doesnt exist in the database.
+		//what the fuck is this for? I dont think this ever runs. But im keeping it since theres
+		//probably a reason why i wrote it in the first place. hopefully.
+		if (password.length == 0) {
+			return socket.emit("RoomMessage", {
+				success: false,
+				msg: "Error: Wrong password",
+			});
+		}
+
+		//check the password object for lastActive if its too early to post
+		let d = new Date();
+		let today = d.getTime();
+		console.log(today - password[0].lastActive);
+		//if earlier than 2.5 seconds since last post, ban user. (clientside is 3 seconds)
+		if (today - password[0].lastActive < 2500) {
+			const newFlagged = new Flagged({
+				password: data.password,
+				roomId: data.roomId,
+			});
+			try {
+				await newFlagged.save();
+			} catch (err) {
+				
+            }
+            return socket.emit("RoomMessage", {
+                success: true,
+                msg: "Successfully posted question!",
+            });
+            //trolololol
+		}
+
+		//update lastactive.
+		password[0].lastActive = today;
+		try {
+			await password[0].save();
+		} catch (err) {
+			console.log(err);
         }
+        
+        //post new question to database.
+        const question = new Question({
+            question: data.question,
+            userId: password[0].userId,
+            roomId: data.roomId,
+        })
 
-    })
+        question.save();
+
+        return socket.emit("RoomMessage", {
+            success: true,
+            msg: "Successfully posted question!"
+        })
+	})
 })
+
+
