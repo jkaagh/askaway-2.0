@@ -42,6 +42,7 @@ const io = require('socket.io')(server, options);
 const Flagged       = require("./models/flaggedPassword")
 const Password      = require("./models/password")
 const Question      = require("./models/question")
+const Room          = require("./models/room")
 
 
 
@@ -50,13 +51,35 @@ const Question      = require("./models/question")
 io.on("connection", function(socket){
     console.log("New WS connection")
 
-    socket.on("adminValidate", function(data){
+    socket.on("adminValidate", async function(data){
         console.log(data)
-        //check in database if this is admin password
+        let password;
+        //Search database for admin password
+        try {
+			password = await Room.find({ adminPassword: data.password });
+		} catch (err) {
+			console.log(err)
+		}
 
-        //if not, cancel
+        console.log(password)
+
+        //if password isnt found.
+        if(password.length == 0){
+            return
+            //wont even bother telling the client for now
+        }
 
         //if yes, respond with question list on the server.
+
+        
+        try{
+            questionList = await Question.find({roomId: password[0].roomId})
+        }
+        catch(err){
+            console.log(err)
+        }
+
+        socket.emit("QuestionList", {questionList: questionList})
 
 
         //maybe put this sockets ID into a file on the database, 
@@ -85,7 +108,7 @@ io.on("connection", function(socket){
 				msg: "A server error occured.",
 			});
 		}
-		console.log(bannedPassword);
+		
 
 		// if a password is found (which means this password is banned)
 		if (bannedPassword.length != []) {

@@ -12,13 +12,22 @@ export default function Room(props) {
         //connect to the server
         socketRef.current = io.connect("http://localhost:3001") //hvad er .current?
         // socketRef.current.emit
+        socketRef.current.on("QuestionList", ({ questionList }) => {
+			
+            console.log(questionList)
+		});
         
     }, [])
+
+    //socketio stuff
+
+
 
     const test = () =>{
         console.log(roomId)
         socketRef.current.emit("adminValidate", {
             password: cookie.load("adminPassword" + roomId + ""),
+            roomId: roomId,
         })
     }
     
