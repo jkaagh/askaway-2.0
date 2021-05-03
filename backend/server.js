@@ -51,7 +51,7 @@ const Room          = require("./models/room")
 io.on("connection", function(socket){
     console.log("New WS connection")
 
-    socket.on("adminValidate", async function(data){
+    socket.on("adminValidate", async function(data){ //this gets run every time admin client starts
         console.log(data)
         let password;
         //Search database for admin password
@@ -62,11 +62,21 @@ io.on("connection", function(socket){
 		}
 
         console.log(password)
-
+        
         //if password isnt found.
         if(password.length == 0){
             return
             //wont even bother telling the client for now
+        }
+
+        //save socket id into database. used for knowing what client to send questions to.
+        password[0].adminSocketId = socket.id
+        console.log(socket.id)
+
+        try{
+            await password[0].save()
+        }catch(err){
+            console.log(err)
         }
 
         //if yes, respond with question list on the server.
@@ -82,7 +92,7 @@ io.on("connection", function(socket){
         socket.emit("QuestionList", {questionList: questionList})
 
 
-        //maybe put this sockets ID into a file on the database, 
+        
     })
 
     socket.on("postQuestion", async function(data){
@@ -114,7 +124,7 @@ io.on("connection", function(socket){
 		if (bannedPassword.length != []) {
 			return socket.emit("RoomMessage", {
 				success: true,
-				msg: "Successfully posted question!",
+				msg: "Successfully posted qqqquestion!",
 			});
 
 			//this sends the exact same thing as if the question was published.
@@ -168,7 +178,7 @@ io.on("connection", function(socket){
             }
             return socket.emit("RoomMessage", {
                 success: true,
-                msg: "Successfully posted question!",
+                msg: "Successfully posteeed question!",
             });
             //trolololol
 		}
@@ -190,10 +200,29 @@ io.on("connection", function(socket){
 
         question.save();
 
-        return socket.emit("RoomMessage", {
+        socket.emit("RoomMessage", {
             success: true,
-            msg: "Successfully posted question!"
+            msg: "Successfully postedddd question!"
         })
+
+        console.log("ass")
+        //find admin socketid and emit to the host
+        let room
+        try {
+			room = await Room.find({ roomId: data.roomId });
+		} catch (err) {
+			console.log(err)
+		}
+
+        let socketid = room[0].adminSocketId;
+        console.log(socketid)
+
+        io.to(socketid).emit("SingleQuestion", {
+            question: data.question,
+            userId: password[0].userId,
+            roomId: data.roomId,
+        })
+        
 	})
 })
 
