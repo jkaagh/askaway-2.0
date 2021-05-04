@@ -49,29 +49,30 @@ const Room          = require("./models/room")
 
 
 io.on("connection", function(socket){
-    console.log("New WS connection")
+    // console.log("New WS connection")
 
     socket.on("adminValidate", async function(data){ //this gets run every time admin client starts
-        console.log(data)
+        
         let password;
+
         //Search database for admin password
         try {
 			password = await Room.find({ adminPassword: data.password });
 		} catch (err) {
 			console.log(err)
+            return socket.emit("message", {success: false, msg: "Server Error, try again later."})
 		}
 
-        console.log(password)
+        
         
         //if password isnt found.
         if(password.length == 0){
-            return
-            //wont even bother telling the client for now
+            return socket.emit("message", {success: false, msg: "Password not found. You appear to not have hosted this room. If this isn't the case, make sure you aren't using a different browser or incognito mode."})
         }
 
         //save socket id into database. used for knowing what client to send questions to.
         password[0].adminSocketId = socket.id
-        console.log(socket.id)
+
 
         try{
             await password[0].save()

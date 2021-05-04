@@ -12,6 +12,7 @@ export default function Room(props) {
     const [message, setMessage] = useState("")
     const [inputValue, setInputValue] = useState("")
     const [classList, setClassList] = useState("")
+    const [canPost, setCanPost] = useState(true)
     useEffect(() => {
         setUserId(cookie.load("userId" + roomId + ""))
         console.log(props)
@@ -23,7 +24,7 @@ export default function Room(props) {
 
     useEffect(() => {
 		//connect to the server
-		socketRef.current = io.connect("http://localhost:3001"); //hvad er .current?
+		socketRef.current = io.connect("http://localhost:3001"); 
 		// socketRef.current.emit
 		socketRef.current.on("RoomMessage", ({ msg, success }) => {
 			if (success === false) {
@@ -42,9 +43,28 @@ export default function Room(props) {
 
     const handlePost = () => {
         
+        if(canPost) {
+
+            setCanPost(false)
+
+            //set timer
+            setTimeout(() =>{
+
+                setCanPost(true)
+            }, 3000)
+        }
+        else{
+            setClassList("text-danger d-block")
+				setMessage("You can't post more than once every 3 seconds.");
+                return
+        }
+       
+
         let password = cookie.load("userPassword" + roomId + "")
         console.log(password)
         socketRef.current.emit("postQuestion", {password: password, roomId: roomId, question: inputValue })
+
+       
 
         // Axios.post("http://localhost:3001/postquestion/", {password: password, roomId: roomId, question: inputValue })
         // .then((response) =>{
