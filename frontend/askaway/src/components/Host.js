@@ -15,6 +15,7 @@ export default function Room(props) {
     const [data, setData] = useState([])
     const [message, setMessage] = useState("")
     const [classList, setClassList] = useState("")
+    const [userToBan, setUserToBan] = useState()
     
     const socketRef = useRef()
 
@@ -58,17 +59,20 @@ export default function Room(props) {
     }, [])
 
     
-    const handleBanClick = () => {
+    const handleBanClick = (id) => {
         // do something related to a popup window here.
+        setUserToBan(id)
        handleShow()
     }
 
     const handleBan = (id) => {
+        handleClose()
+
         console.log(id)
         Axios.post("http://localhost:3001/banuser/", {
             password: cookie.load("adminPassword" + roomId + ""),
             userId: id
-        })
+        })//todo start from here, and also create the route
         .then((response) =>{
             console.log(response.data)
             if(response.data.success === false){
@@ -122,15 +126,15 @@ export default function Room(props) {
 
             <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
-          <Modal.Title>Modal heading</Modal.Title>
+          <Modal.Title>Ban user?</Modal.Title>
         </Modal.Header>
-        <Modal.Body>Woohoo, you're reading this text in a modal!</Modal.Body>
+        <Modal.Body>Are you sure you want to ban user '{userToBan}'? You will not recieve any questions and the user will not be notified. <b>This cannot be undone.</b></Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose}>
-            Close
+          <Button variant="danger" onClick={handleBan}>
+            Confirm
           </Button>
           <Button variant="primary" onClick={handleClose}>
-            Save Changes
+            Cancel
           </Button>
         </Modal.Footer>
       </Modal>
