@@ -1,13 +1,12 @@
 import React, {useState, useEffect, useRef} from 'react'
-import cookie from 'react-cookies'
-import Axios from "axios"
+import cookie from 'react-cookies'  
 import {io} from "socket.io-client"
 
 //as soon as i load the room, check for user and admin password. do server calls dependant on which one i find.
 //user only posts, admin can also request from server.
 export default function Room(props) {
 
-    const [roomId, setRoomId] = useState(props.match.params.id);
+    const [roomId] = useState(props.match.params.id);
     const [userId, setUserId] = useState()
     const [message, setMessage] = useState("")
     const [inputValue, setInputValue] = useState("")

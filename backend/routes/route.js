@@ -20,7 +20,7 @@ router.post("/createroom/", async(req, res) => {
         req.body.captcha === "" ||
         req.body.captcha === null
     ){
-        return res.send({success: false, msg: "Please complete captcha"})
+        // return res.send({success: false, msg: "Please complete captcha"})
     }
     const query = stringify({
         secret: secretKey,
@@ -36,26 +36,58 @@ router.post("/createroom/", async(req, res) => {
     // console.log(body)
 
     if(body.success !== true){
-        return res.send({success: false, msg: "Failed to complete captcha."})
+        // return res.send({success: false, msg: "Failed to complete captcha."})
     }
 
     //if everything worked out, run this:
 
-
-    //generate a random room id
-    let roomCode = CodeGenerator(4)
-    // console.log(roomCode)
-
-    //todo check if Room.find({createdDate < 24 hours ago})
-    const existingRoom = await Room.find({roomId: roomCode})
-    // console.log(existingRoom)
-    //will return [] if room doesnt exist.
-    if(existingRoom.length === 0){ 
+    let bannedRooms =[
+        "CUNT", 
+        "FUCK",
+        "NIGG",
+        "NIGA",
+        "JEWS",
+        "RAPE",
+        "SHIT",
+        "HOES",
+        "FAGG",
+        "PISS",
+        "ANUS",
+        "TITS",
+        "POOP",
+        "CUCK",
+        "ANAL",
+   
+    ]
+    let roomCode
+    // let test = 0;
+    let finished = false;
+    while(finished === false){
+        finished = true;
+        roomCode = CodeGenerator(4)
         
+        // if(test < 3){
+        //     roomCode = "RAPE"
+        // }
+        // test++;
+        console.log(roomCode)
+
+        let existingRoom
+
+        if(bannedRooms.includes(roomCode)){
+            finished = false;
+        }
+        else{
+            existingRoom = await Room.find({roomId: roomCode})
+
+            if(existingRoom.length > 0){
+                finished = false;
+            }
+        }
+
     }
-    else{
-        //if it does, do this. delete room if too old, otherwise dont.
-    }
+  
+
 
     const adminPassword = uuidv4()
     // console.log(adminPassword)
@@ -142,7 +174,7 @@ router.post("/joinroom/", async(req, res) =>{
     if (today - roomAge > 86400000) { //if room is older than 24 hours 
         // console.log("this room is too old!")
         return res.send({ success: false, msg: "Room not found" })
-        //todo AKZ87 maybe delete the old room here. 
+        
     }
 
 
@@ -164,9 +196,32 @@ router.post("/joinroom/", async(req, res) =>{
 
     }
 
-    //if password is not found, or does not match
-    let newPassword = uuidv4();
+    
+
+    //generate random id's for people
+    
     let newUserId = CodeGenerator(2);
+    console.log(newUserId)
+   
+    while(existingRoom[0].existingUserIds.includes(newUserId)){
+        newUserId = CodeGenerator(2);
+        console.log(newUserId)
+        
+
+        //in case over 200 people joins (max is 576), use longer id's instead.
+        if(existingRoom[0].existingUserIds.length > 200){
+            newUserId=CodeGenerator(4);
+        }
+    }
+
+    existingRoom[0].existingUserIds.push(newUserId)
+    try{    
+        await existingRoom[0].save()
+    }catch(err){
+        console.log(err)
+    }
+
+    let newPassword = uuidv4();
 
     const passwordObject = new Password({
         roomId: req.body.room,
@@ -185,7 +240,7 @@ router.post("/joinroom/", async(req, res) =>{
 
 router.post("/postquestion/", async(req, res) => {
 
-
+    return // currently not in use
 
     //check if client sent a password.
     if(req.body.password === undefined){
@@ -270,7 +325,62 @@ router.post("/postquestion/", async(req, res) => {
 
 // })
 
+router.post("/banuser/", async(req, res) => {
+    let password;
+    console.log("this ran")
+    
+    //Search database for admin password
+    try {
+        password = await Room.find({ adminPassword: req.body.password });
+    } catch (err) {
+        console.log(err)
+        return res.send({ success: false, msg: "Server error, try again later." })
+    }
 
+    //if password isnt found.
+    if (password.length == 0) {
+        return res.send({ success: true, msg: "User banned successfully" })
+        //trolling anyone who dares to cheat. this is otherwise impossible to reach.
+    }
+
+    //remove data for sent ID from server.
+    try{
+        await Question.find({roomId: req.body.roomId, userId: req.body.userId }).deleteMany()
+    }catch(err){
+        console.log(err)
+        return res.send({success: false, msg: "Server error, couldn't delete questions. Try again later"})
+    }
+    
+    
+    //find user
+    let user
+    try{
+        user = await Password.find({roomId: req.body.roomId, userId: req.body.userId})
+    }
+    catch(err){
+        console.log(err)
+
+        return res.send({success: false, msg: "Server error, couldn't find user."})
+    }
+    console.log(user)
+    //ban user
+
+    const newFlagged = new Flagged({
+        password: user[0].password,
+        roomId: user[0].roomId
+    })
+    try{
+        await newFlagged.save()
+    }catch(err){
+
+        return res.send({success: true, msg: "Server error, couldn't ban user"})
+    }
+
+    return res.send({success: true, msg: "Successfully banned user"})
+    
+
+
+})
 
 
 
@@ -280,7 +390,6 @@ function CodeGenerator(codeLength){
     let result = "";    
     for (let i = 0; i < codeLength; i++) {
         result += chars.charAt(Math.floor(Math.random() * length));
-        
     }
 
     return result;    

@@ -10,7 +10,7 @@ export default function PreviousRoom() {
     
     useEffect(() => {
         prevRoomCookie = cookie.load("PreviousRoom")
-        if(prevRoomCookie == undefined){
+        if(prevRoomCookie === undefined){
             return null
         }
         else{

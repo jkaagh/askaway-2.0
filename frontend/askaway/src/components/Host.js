@@ -5,13 +5,12 @@ import BanHammer from "../assets/hammer.svg"
 import Axios from "axios"
 import Modal from "react-bootstrap/Modal"
 import Button from "react-bootstrap/Button"
-import closeButton from "react-bootstrap/closeButton"
 
 // import { set } from 'mongoose';
 
 export default function Room(props) {
 
-    const [roomId, setRoomId] = useState(props.match.params.id);
+    const [roomId] = useState(props.match.params.id);
     const [data, setData] = useState([])
     const [message, setMessage] = useState("")
     const [classList, setClassList] = useState("")
@@ -62,27 +61,27 @@ export default function Room(props) {
     const handleBanClick = (id) => {
         // do something related to a popup window here.
         setUserToBan(id)
-       handleShow()
+        
+        handleShow()
     }
 
-    const handleBan = (id) => {
+    const handleBan = () => {
         handleClose()
-
-        console.log(id)
+        
+        console.log(userToBan)
+        
         Axios.post("http://localhost:3001/banuser/", {
             password: cookie.load("adminPassword" + roomId + ""),
-            userId: id
-        })//todo start from here, and also create the route
-        .then((response) =>{
-            console.log(response.data)
-            if(response.data.success === false){
-                setMessage(response.data.msg)
-            }
-            else{
-                // setInputValue("")
-            }
+            userId: userToBan,
+            roomId: roomId
+        }).then((response) =>{
+            console.log(response)
+            console.log(data)
+            // setData(data.filter(item))
         })
     }
+
+
     
     const [show, setShow] = useState(false);
 
@@ -109,7 +108,7 @@ export default function Room(props) {
                                 <td className="text-left px-3">{question.question}</td>
                                 <td onClick={() => handleBanClick(question.userId)} className="text-center">
                                     <div>
-                                        <img src={BanHammer}></img>
+                                        <img alt="ban user" src={BanHammer}></img>
                                     </div>
                                 </td>
                             </tr>

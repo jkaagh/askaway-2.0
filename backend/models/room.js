@@ -6,10 +6,6 @@ const RoomSchema = new mongoose.Schema({
         type: String,
         require: true
     },
-    bannedIds:{ //an array of strings of the ids that are shadowbanned
-        type: Array,
-        require: false
-    },
     // deprecated: used elsewhere for performance
     // flaggedPasswords: { //and array of passwords that are flagged for spam.
     //     type: Array,
@@ -27,6 +23,11 @@ const RoomSchema = new mongoose.Schema({
     //     type: Array,
     //     require: false
     // },
+    existingUserIds:{
+        type: Array,
+        require: true,
+        default: []
+    },
     createdDate: {
         type: Date,
         require: true,
