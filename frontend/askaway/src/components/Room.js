@@ -12,10 +12,24 @@ export default function Room(props) {
     const [inputValue, setInputValue] = useState("")
     const [classList, setClassList] = useState("")
     const [canPost, setCanPost] = useState(true)
+
     useEffect(() => {
         setUserId(cookie.load("userId" + roomId + ""))
         console.log(props)
     }, [])
+
+    useEffect(() => {
+        const listener = event => {
+            if (event.code === "Enter" || event.code === "NumpadEnter") {
+                event.preventDefault();
+                handlePost()
+            }
+        };
+        document.addEventListener("keydown", listener);
+        return () => {
+            document.removeEventListener("keydown", listener);
+        };
+    },)
 
 
     //socketio stuff

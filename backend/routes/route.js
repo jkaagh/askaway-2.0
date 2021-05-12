@@ -57,7 +57,9 @@ router.post("/createroom/", async(req, res) => {
         "POOP",
         "CUCK",
         "ANAL",
-   
+        "PUSS",
+        "PUSY",
+        "PUSI",   
     ]
     let roomCode
     // let test = 0;
