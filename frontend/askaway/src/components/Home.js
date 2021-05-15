@@ -14,7 +14,9 @@ export default function Home() {
     const [captchaValue, setCaptchaValue] = useState()
     const [captchaWarning, setCaptchaWarning] = useState()
 
+    
 
+    //this entire thing is just for clicking enter to fire a function
     useEffect(() => {
         const listener = event => {
             if (event.code === "Enter" || event.code === "NumpadEnter") {
@@ -23,6 +25,7 @@ export default function Home() {
             }
         };
         document.addEventListener("keydown", listener);
+
         return () => {
             document.removeEventListener("keydown", listener);
         };
@@ -40,7 +43,16 @@ export default function Home() {
                 if (response.data.success === false) {
                     setCaptchaWarning(response.data.msg)
                     console.log(response.data)
+                    setCreateText("Or create a room...  ")
+
+
+                      //shitty workaround that reloads page if you stumble upon this bug. because their docs suck ass.
+                    if(captchaValue == "ass"){
+                        window.location.reload()
+                    }
                 }
+                setCaptchaValue("ass")
+                
                 if (response.data.roomCreated === true) {
                     let d = new Date();
                     let time = d.getTime()
@@ -65,9 +77,18 @@ export default function Home() {
         // console.log(existingPassword)
         Axios.post("http://localhost:3001/joinroom", { captcha: captchaValue, existingPassword: existingPassword, room: inputValue })
             .then((response) => {
+                
                 if (response.data.success === false) {
                     setCaptchaWarning(response.data.msg)
+                    setJoinText("Join")
+                    
+                    //shitty workaround that reloads page if you stumble upon this bug. because their docs suck ass.
+                    if(captchaValue == "ass"){
+                        window.location.reload()
+                    }
+                    
                 }
+                setCaptchaValue("ass")
                 console.log(response.data)
                 if (response.data.newPassword !== undefined) { //this runs if user sent wrong or no password
                     let d = new Date();
@@ -98,7 +119,7 @@ export default function Home() {
                 <h1 className="display-4 d-sm-none text-wrap">Askaway</h1>
 
                 <h4 className="">The free service that lets you ask anonymous questions live.</h4>
-                <a href="readmore.html" id="" className="alert-link">Read more</a>
+                <a href="readmore" id="" className="alert-link">Read more</a>
 
             </div>
 
@@ -113,7 +134,8 @@ export default function Home() {
                     <ReCaptcha
                         sitekey="6LdqX4saAAAAAC3Cie6ilnn6ujzvKuiMm2tjYeWG"
                         onChange={handleCaptcha}
-                    />
+                        
+                    /> 
 
                 </div>
                 <span className="text-danger d-block">

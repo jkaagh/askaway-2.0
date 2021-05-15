@@ -77,7 +77,12 @@ export default function Room(props) {
         }).then((response) =>{
             console.log(response)
             console.log(data)
-            // setData(data.filter(item))
+            
+            //im super lazy so just reset the thing instead of cleaning out the local array.
+            socketRef.current.emit("adminValidate", {
+                password: cookie.load("adminPassword" + roomId + ""),
+                roomId: roomId,
+            })
         })
     }
 

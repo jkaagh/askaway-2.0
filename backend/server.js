@@ -6,8 +6,24 @@ const app = express();
 const mongoose = require("mongoose");
 const cors = require("cors");
 
+const config = require("./config")
+
 //mongoose and database connection
-mongoose.connect(process.env.DATABASE_URL, {useNewUrlParser: true, useUnifiedTopology: true})
+// mongoose.connect(process.env.DATABASE_URL, {useNewUrlParser: true, useUnifiedTopology: true})
+const dbUrl = config.dbUrl;
+
+var dboptions = {
+  keepAlive: 1,
+  connectTimeoutMS: 30000,
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+};
+
+mongoose.connect(dbUrl, dboptions, (err) => {
+  if (err) console.log(err);
+});
+
+
 const db = mongoose.connection
 db.on("error", (error) => console.log(error))
 db.once("open", () => console.log("Connected to database"))
@@ -125,7 +141,7 @@ io.on("connection", function(socket){
 		if (bannedPassword.length != []) {
 			return socket.emit("RoomMessage", {
 				success: true,
-				msg: "Successfully posted qqqquestion!",
+				msg: "Successfully posted question!",
 			});
 
 			//this sends the exact same thing as if the question was published.
@@ -179,7 +195,7 @@ io.on("connection", function(socket){
             }
             return socket.emit("RoomMessage", {
                 success: true,
-                msg: "Successfully posteeed question!",
+                msg: "Successfully posted question!",
             });
             //trolololol
 		}
@@ -203,7 +219,7 @@ io.on("connection", function(socket){
 
         socket.emit("RoomMessage", {
             success: true,
-            msg: "Successfully postedddd question!"
+            msg: "Successfully posted question!"
         })
 
         console.log("ass")
