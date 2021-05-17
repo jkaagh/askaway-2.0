@@ -42,7 +42,7 @@ const server = require('http').createServer(app);
 
 //actually boot up server.
 
-server.listen(3001, () => console.log("Server started"));
+server.listen(process.env.PORT || 3001, () => console.log("Server started"));
 
 
 //socket.io https://stackoverflow.com/questions/35713682/socket-io-gives-cors-error-even-if-i-allowed-cors-it-on-server?rq=1
