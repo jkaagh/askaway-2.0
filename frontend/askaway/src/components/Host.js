@@ -97,7 +97,7 @@ export default function Room(props) {
         <div className="container " id="QuestionsContainer">
         <div className="container">
             <h3 className="pt-4 text-center ">Room Code: {props.match.params.id}</h3>
-            <table className="table table-striped table-bordered text-left">
+            <table className="table table-striped table-bordered text-left customTable">
                 <tbody id="tableBody">
                     <tr>
                         <th className="text-center"width="50px">#</th>

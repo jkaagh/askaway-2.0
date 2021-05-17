@@ -128,7 +128,7 @@ export default function Home() {
 
 
             <div className="container w-sm-50">
-                <input onChange={(e) => handleChange(e.target.value)} value={inputValue} id="codeInput" className="form-control text-center" type="text" placeholder="Type room code here to join" name="askawayInput" />
+                <input onChange={(e) => handleChange(e.target.value)} value={inputValue} id="codeInput" className="form-control text-center customInput" type="text" placeholder="Type room code here to join" name="askawayInput" />
 
                 <div className="container d-flex flex-wrap justify-content-center mt-4">
                     <ReCaptcha
@@ -142,13 +142,13 @@ export default function Home() {
                     {captchaWarning}
                 </span>
 
-                <button onClick={handleJoin} className="btn btn-primary px-4 m-4">{joinText}</button>
+                <button onClick={handleJoin} className=" btn btn-primary px-4 m-4 customButton">{joinText}</button>
 
             </div>
 
             <div className="container">
                 {/* <Link to={"/room/" + }> */}
-                <button onClick={handleCreate} className="btn btn-link alert-link">{createText}</button>
+                <button onClick={handleCreate} className="btn btn-link alert-link ">{createText}</button>
                 {/* </Link> */}
             </div>
 
