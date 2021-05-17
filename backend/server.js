@@ -8,9 +8,10 @@ const cors = require("cors");
 const path = require("path")
 
 const config = require("./config")
-
+app.use(express.urlencoded({ extended: false }))
+app.use(express.json())
 //show client the frontend
-app.use(express.static(path.join(__dirname, "public")))
+app.use(express.static(path.join(__dirname, "build")))
 
 //mongoose and database connection
 // mongoose.connect(process.env.DATABASE_URL, {useNewUrlParser: true, useUnifiedTopology: true})
@@ -33,7 +34,6 @@ db.on("error", (error) => console.log(error))
 db.once("open", () => console.log("Connected to database"))
 
 //middleware
-app.use(express.json())
 app.use(cors())
 
 //routes
