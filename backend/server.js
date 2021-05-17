@@ -12,6 +12,10 @@ app.use(express.urlencoded({ extended: false }))
 app.use(express.json())
 //show client the frontend
 app.use(express.static(path.join(__dirname, "build")))
+// app.use('/static', express.static(path.join(__dirname, 'build')));
+app.get('*', function(req, res) {
+  res.sendFile('index.html', {root: path.join(__dirname, 'build')});
+});
 
 //mongoose and database connection
 // mongoose.connect(process.env.DATABASE_URL, {useNewUrlParser: true, useUnifiedTopology: true})

@@ -23,7 +23,7 @@ export default function Room(props) {
 
     useEffect(() => {
         //connect to the server
-        socketRef.current = io.connect("http://localhost:3001") //hvad er .current?
+        socketRef.current = io.connect("https://askawayapp.herokuapp.com") //hvad er .current?
         
 
         //sends on startup to validate a few things.
@@ -70,7 +70,7 @@ export default function Room(props) {
         
         console.log(userToBan)
         
-        Axios.post("http://localhost:3001/banuser/", {
+        Axios.post("https://askawayapp.herokuapp.com/banuser/", {
             password: cookie.load("adminPassword" + roomId + ""),
             userId: userToBan,
             roomId: roomId

@@ -38,7 +38,7 @@ export default function Home() {
     const handleCreate = () => {
         setCreateText("Loading...")
 
-        Axios.post("http://localhost:3001/createroom", { captcha: captchaValue, })
+        Axios.post("https://askawayapp.herokuapp.com/createroom", { captcha: captchaValue, })
             .then((response) => {
                 if (response.data.success === false) {
                     setCaptchaWarning(response.data.msg)

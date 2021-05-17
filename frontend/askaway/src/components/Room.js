@@ -37,7 +37,7 @@ export default function Room(props) {
 
     useEffect(() => {
 		//connect to the server
-		socketRef.current = io.connect("http://localhost:3001"); 
+		socketRef.current = io.connect("https://askawayapp.herokuapp.com"); 
 		// socketRef.current.emit
 		socketRef.current.on("RoomMessage", ({ msg, success }) => {
 			if (success === false) {

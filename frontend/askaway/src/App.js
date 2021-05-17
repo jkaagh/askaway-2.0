@@ -4,7 +4,6 @@ import Home from "./components/Home"
 import Room from "./components/Room"
 import Host from "./components/Host"
 import ReadMore from "./components/ReadMore"
-
 function App() {
   return (
     <div className="App">
