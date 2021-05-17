@@ -5,8 +5,12 @@ const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
 const cors = require("cors");
+const path = require("path")
 
 const config = require("./config")
+
+//show client the frontend
+app.use(express.static(path.join(__dirname, "public")))
 
 //mongoose and database connection
 // mongoose.connect(process.env.DATABASE_URL, {useNewUrlParser: true, useUnifiedTopology: true})
