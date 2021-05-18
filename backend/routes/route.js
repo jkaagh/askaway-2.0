@@ -137,6 +137,8 @@ router.post("/joinroom/", async(req, res) =>{
     // console.log(body)
 
     if(body.success !== true){
+
+        return res.send(secretKey)
         return res.send({success: false, msg: "Failed to complete captcha."})
     }
 

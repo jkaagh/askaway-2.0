@@ -8,7 +8,7 @@ import PreviousRoom from "./PreviousRoom"
 export default function Home() {
     let history = useHistory();
 
-    const [inputValue, setInputValue] = useState()
+    const [inputValue, setInputValue] = useState("")
     const [createText, setCreateText] = useState("Or create a room...")
     const [joinText, setJoinText] = useState("Join")
     const [captchaValue, setCaptchaValue] = useState()
@@ -64,7 +64,7 @@ export default function Home() {
                     history.push("/host/" + response.data.roomId + "")
 
                 }
-                console.log(response.data)
+            
 
 
                 //redirect to subpage todo
@@ -75,7 +75,7 @@ export default function Home() {
         setJoinText("Loading...");
         let existingPassword = cookie.load("userPassword" + inputValue + "");
         // console.log(existingPassword)
-        Axios.post("http://localhost:3001/joinroom", { captcha: captchaValue, existingPassword: existingPassword, room: inputValue })
+        Axios.post("https://askawayapp.herokuapp.com/joinroom", { captcha: captchaValue, existingPassword: existingPassword, room: inputValue })
             .then((response) => {
                 
                 if (response.data.success === false) {
@@ -83,13 +83,13 @@ export default function Home() {
                     setJoinText("Join")
                     
                     //shitty workaround that reloads page if you stumble upon this bug. because their docs suck ass.
-                    if(captchaValue == "ass"){
+                    if(captchaValue == "reload"){
                         window.location.reload()
                     }
                     
                 }
-                setCaptchaValue("ass")
-                console.log(response.data)
+                setCaptchaValue("reload")
+                
                 if (response.data.newPassword !== undefined) { //this runs if user sent wrong or no password
                     let d = new Date();
                     let time = d.getTime()

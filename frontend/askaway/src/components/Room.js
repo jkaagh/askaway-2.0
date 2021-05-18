@@ -15,7 +15,7 @@ export default function Room(props) {
 
     useEffect(() => {
         setUserId(cookie.load("userId" + roomId + ""))
-        console.log(props)
+        
     }, [])
 
     useEffect(() => {
@@ -48,7 +48,7 @@ export default function Room(props) {
                 setClassList("text-primary d-block")
                 setMessage(msg)
             }
-            console.log(success, msg)
+            
 		});
 	}, [])
 
@@ -74,7 +74,7 @@ export default function Room(props) {
        
 
         let password = cookie.load("userPassword" + roomId + "")
-        console.log(password)
+        
         socketRef.current.emit("postQuestion", {password: password, roomId: roomId, question: inputValue })
 
        

@@ -43,6 +43,7 @@ export default function ReadMore() {
                 
             </p>
             <p className="d-sm-none">
+                As a room host, you have the ability to shadowban people. This means you won't see any of their questions, and they won't know they're banned.
             
             </p>
         </div>

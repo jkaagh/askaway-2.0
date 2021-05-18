@@ -42,7 +42,6 @@ export default function Room(props) {
         // on refresh/startup, get list from server.
         socketRef.current.on("QuestionList", ({ questionList }) => {
 			
-            console.log(questionList)
             setData(questionList)
 		});
 
