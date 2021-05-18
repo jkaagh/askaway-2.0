@@ -20,7 +20,7 @@ router.post("/createroom/", async(req, res) => {
         req.body.captcha === "" ||
         req.body.captcha === null
     ){
-        // return res.send({success: false, msg: "Please complete captcha"})
+        return res.send({success: false, msg: "Please complete captcha"})
     }
     const query = stringify({
         secret: secretKey,
@@ -36,7 +36,7 @@ router.post("/createroom/", async(req, res) => {
     // console.log(body)
 
     if(body.success !== true){
-        // return res.send({success: false, msg: "Failed to complete captcha."})
+        return res.send({success: false, msg: "Failed to complete captcha."})
     }
 
     //if everything worked out, run this:
