@@ -128,7 +128,7 @@ export default function Room(props) {
             </div>
 
             <Modal show={show} onHide={handleClose}>
-        <Modal.Header closeButton>
+        <Modal.Header>
           <Modal.Title>Ban user?</Modal.Title>
         </Modal.Header>
         <Modal.Body>Are you sure you want to ban user '{userToBan}'? You will not recieve any questions and the user will not be notified. <b>This cannot be undone.</b></Modal.Body>

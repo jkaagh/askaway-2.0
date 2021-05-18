@@ -4,6 +4,8 @@ import Axios from "axios"
 import ReCaptcha from "react-google-recaptcha"
 import cookie from 'react-cookies'
 import PreviousRoom from "./PreviousRoom"
+import CookieLaw from "./CookieLaw"
+
 
 export default function Home() {
     let history = useHistory();
@@ -153,6 +155,7 @@ export default function Home() {
             </div>
 
             <PreviousRoom />
+            <CookieLaw/>
         </div>
     )
 }

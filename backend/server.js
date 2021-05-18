@@ -10,6 +10,7 @@ const path = require("path")
 const config = require("./config")
 app.use(express.urlencoded({ extended: false }))
 app.use(express.json())
+
 //show client the frontend
 app.use(express.static(path.join(__dirname, "build")))
 // app.use('/static', express.static(path.join(__dirname, 'build')));
@@ -30,6 +31,7 @@ var dboptions = {
 
 mongoose.connect(dbUrl, dboptions, (err) => {
   if (err) console.log(err);
+  handleCleanup();
 });
 
 
@@ -67,8 +69,8 @@ const Flagged       = require("./models/flaggedPassword")
 const Password      = require("./models/password")
 const Question      = require("./models/question")
 const Room          = require("./models/room")
-
-
+const Cleanup       = require("./models/cleanup")
+const Log           = require("./models/log")
 
 
 
@@ -250,5 +252,130 @@ io.on("connection", function(socket){
         
 	})
 })
+
+
+//cleanup functions
+
+//runs as soon as server connected to database.
+ const handleCleanup = async () => {
+    console.log("ass")
+
+    let cleanupObj
+    try{
+        cleanupObj = await Cleanup.find({id: "asdf"})
+    }catch(err){
+        console.log(err)
+    }
+
+    console.log(cleanupObj)
+
+    //if the cleanup timer object doesnt exist, create it. 
+    if(cleanupObj.length === 0){
+        const newCleanup = new Cleanup()
+        try{
+            newCleanup.save()
+        }catch(err){
+            console.log(err)
+        }
+        return // need to figure out a better way
+    }
+
+
+    //if there exists an object, run this:
+
+    let clean = cleanupObj[0]
+    
+    
+    //figure out how long it is since cleanup last ran
+    let today = new Date();
+    console.log(today.getTime())
+    let timeSinceLast = today.getTime() - clean.timeSinceLast
+    console.log(timeSinceLast)
+    let hour = 3600000
+
+    //if more than 1 minutes has passed
+    if(timeSinceLast > hour){
+
+        let rooms
+        try{
+            rooms = await Room.find()
+        }catch(err){
+            console.log(err)
+        }
+        console.log(rooms.length)
+
+        let toBeRemoved = []
+
+        //if older than 24 hours, add their ID it to the toBeRemoved array.
+        rooms.forEach(room => {
+            // console.log(today.getTime() - room.createdDate.getTime())
+            
+            if(today.getTime() - room.createdDate.getTime() > 86400000 ){
+                toBeRemoved.push(room.roomId)
+            }
+
+        })
+
+        console.log(toBeRemoved)
+
+        //delete questions:
+        let log = []
+        try{
+            let item = await Question.find({roomId: {$in: toBeRemoved}}).deleteMany()
+            log.push("Deleted " + item.length + " question(s).")
+        }catch(err){
+            console.log(err)
+        }
+
+        //delete passwords
+        try{
+            let item = await Password.find({roomId:{$in: toBeRemoved}}).deleteMany()
+            log.push("Deleted " + item.length + " password(s).")
+        }catch(err){
+            console.log(err)
+        }
+
+        //delete flaggedPasswords
+        try{
+            let item = await Flagged.find({roomId:{$in: toBeRemoved}}).deleteMany()
+            log.push("Deleted " + item.length + " flagged password(s).")
+
+        }catch(err){
+            console.log(err)
+        }
+
+        //delete rooms
+        try{
+            let item = await Room.find({roomId:{$in: toBeRemoved}}).deleteMany()
+            log.push("Deleted " + item.length + " room(s).")
+
+        }catch(err){
+            console.log(err)
+        }
+
+
+        //save useless log im gonna use once to confirm stuff works.
+
+        const newLog = new Log({
+            log: log,
+        })
+
+        try{
+            newLog.save()
+        }catch(err){
+            console.log(err)
+        }
+
+
+
+
+    }
+    
+
+    //reset time since
+    clean.timeSinceLast = today.getTime()
+
+}
+
 
 
