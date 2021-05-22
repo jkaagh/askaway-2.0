@@ -58,7 +58,7 @@ server.listen(process.env.PORT || 3001, () => console.log("Server started"));
 //socket.io https://stackoverflow.com/questions/35713682/socket-io-gives-cors-error-even-if-i-allowed-cors-it-on-server?rq=1
 const options={
     cors:true,
-    origins:["http://localhost:3001"],
+    origins:["http://localhost:3001","http://localhost:3002"],
     // origins:["http://127.0.0.1:5347"],
 }
 const io = require('socket.io')(server, options);
@@ -70,7 +70,7 @@ const Password      = require("./models/password")
 const Question      = require("./models/question")
 const Room          = require("./models/room")
 const Cleanup       = require("./models/cleanup")
-const Log           = require("./models/log")
+const Analytics     = require("./models/analytics")
 
 
 
@@ -267,7 +267,7 @@ io.on("connection", function(socket){
         console.log(err)
     }
 
-    console.log(cleanupObj)
+    
 
     //if the cleanup timer object doesnt exist, create it. 
     if(cleanupObj.length === 0){
@@ -288,21 +288,22 @@ io.on("connection", function(socket){
     
     //figure out how long it is since cleanup last ran
     let today = new Date();
-    console.log(today.getTime())
+    
     let timeSinceLast = today.getTime() - clean.timeSinceLast
-    console.log(timeSinceLast)
     let hour = 3600000
+    console.log("Time since last cleanup ", timeSinceLast, " out of ", hour)
+
 
     //if more than 1 minutes has passed
     if(timeSinceLast > hour){
-
+        console.log("Running cleanup process...")
         let rooms
         try{
             rooms = await Room.find()
         }catch(err){
             console.log(err)
         }
-        console.log(rooms.length)
+        
 
         let toBeRemoved = []
 
@@ -316,29 +317,42 @@ io.on("connection", function(socket){
 
         })
 
-        console.log(toBeRemoved)
+        console.log("rooms to be removed: ", toBeRemoved)
 
         //delete questions:
-        let log = []
+        let anal = {
+            questions: undefined,
+            users: undefined,
+            rooms: toBeRemoved.length,
+        }
+        let data
         try{
-            let item = await Question.find({roomId: {$in: toBeRemoved}}).deleteMany()
-            log.push("Deleted " + item.length + " question(s).")
+            data = await Question.find({roomId: {$in: toBeRemoved}})
+            await Question.find({roomId: {$in: toBeRemoved}}).deleteMany()    //ONLY TEMPORARY!!!!
         }catch(err){
             console.log(err)
         }
 
+        anal.questions = data.length;
+       
+        
+
+        
         //delete passwords
         try{
-            let item = await Password.find({roomId:{$in: toBeRemoved}}).deleteMany()
-            log.push("Deleted " + item.length + " password(s).")
+            data = await Password.find({roomId:{$in: toBeRemoved}})
+            await Password.find({roomId:{$in: toBeRemoved}}).deleteMany();
+            
         }catch(err){
             console.log(err)
         }
+        anal.users = data.length;
 
         //delete flaggedPasswords
         try{
-            let item = await Flagged.find({roomId:{$in: toBeRemoved}}).deleteMany()
-            log.push("Deleted " + item.length + " flagged password(s).")
+            Flagged.find({roomId:{$in: toBeRemoved}})
+            await Flagged.find({roomId:{$in: toBeRemoved}}).deleteMany()
+           
 
         }catch(err){
             console.log(err)
@@ -346,34 +360,51 @@ io.on("connection", function(socket){
 
         //delete rooms
         try{
-            let item = await Room.find({roomId:{$in: toBeRemoved}}).deleteMany()
-            log.push("Deleted " + item.length + " room(s).")
-
+            await Room.find({roomId:{$in: toBeRemoved}}).deleteMany()
+           
         }catch(err){
             console.log(err)
         }
+        
+        console.log(anal)
 
-
-        //save useless log im gonna use once to confirm stuff works.
-
-        const newLog = new Log({
-            log: log,
-        })
-
+        //check if analytics file already exists. It always will, unless i click the reset button
+        let analyticsData
         try{
-            newLog.save()
+            analyticsData = await Analytics.find({id: "analytics"})
         }catch(err){
             console.log(err)
         }
 
+        if(analyticsData.length === 0){
+            const NewAnal = new Analytics({
+                rooms: anal.rooms,
+                users: anal.users,
+                questions: anal.questions,
+            })
+           
+            try{
+                NewAnal.save()
+            }catch(err){
 
-
-
+            }
+        }
+        else{
+            analyticsData[0].rooms = analyticsData[0].rooms + anal.rooms
+            analyticsData[0].users = analyticsData[0].users + anal.users
+            analyticsData[0].questions = analyticsData[0].questions + anal.questions
+            try{
+                analyticsData[0].save()
+            }catch(err){
+                console.log(err)
+            }
+        }
     }
     
 
     //reset time since
     clean.timeSinceLast = today.getTime()
+    clean.save()
 
 }
 

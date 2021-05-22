@@ -1,6 +1,7 @@
 import React, {useState, useEffect, useRef} from 'react'
 import cookie from 'react-cookies'  
 import {io} from "socket.io-client"
+import CookieLaw from './CookieLaw';
 
 //as soon as i load the room, check for user and admin password. do server calls dependant on which one i find.
 //user only posts, admin can also request from server.
@@ -105,6 +106,7 @@ export default function Room(props) {
             <button onClick={handlePost} id="btnAskQuestion" className="btn btn-outline-primary mt-3 px-4" type="button">Ask away!</button>
            
         </div>
+        <CookieLaw/>
     </div>
     )
 }

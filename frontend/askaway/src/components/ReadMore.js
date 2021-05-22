@@ -1,9 +1,11 @@
 import React from 'react'
 import "../styles.css"
+import CookieLaw from './CookieLaw'
 
 export default function ReadMore() {
     return (
         <div className="container text-center">
+        <a href="/" id="" className="alert-link">Go back</a>
             <h1 className="display-4">What is Askaway?</h1>
             <p className="readmoreText d-none d-sm-block">
                 Askaway is a free to use service that lets you create your own room for everyone to ask you questions
@@ -46,6 +48,7 @@ export default function ReadMore() {
                 As a room host, you have the ability to shadowban people. This means you won't see any of their questions, and they won't know they're banned.
             
             </p>
+            <CookieLaw/>
         </div>
     )
 }

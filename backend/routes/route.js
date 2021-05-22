@@ -9,9 +9,11 @@ const Question      = require("../models/question")
 const Room          = require("../models/room");
 const Password      = require("../models/password")
 const Flagged       = require("../models/flaggedPassword")
+const Analytics     = require("../models/analytics")
 router = express.Router(); 
 
 const secretKey = process.env.PRIVATE_KEY
+const analPassword = process.env.ANALYTICS_PASSWORD
 
 
 router.post("/createroom/", async(req, res) => {
@@ -386,6 +388,93 @@ router.post("/banuser/", async(req, res) => {
 
 })
 
+router.post("/analytics/", async(req, res) => {
+
+    if( 
+        req.body.captcha === undefined ||
+        req.body.captcha === "" ||
+        req.body.captcha === null
+    ){
+        return res.send({success: false, msg: "Please complete captcha"})
+    }
+    const query = stringify({
+        secret: secretKey,
+        response: req.body.captcha,   
+        remoteip: req.connection.remoteAddress
+      });
+
+      const verifyURL = `https://google.com/recaptcha/api/siteverify?${query}`;
+    
+    
+    const body = await fetch(verifyURL).then(res => res.json())
+
+    // console.log(body)
+
+    if(body.success !== true){
+
+        
+        return res.send({success: false, msg: "Failed to complete captcha."})
+    }
+
+
+
+    if (req.body.password !== analPassword){
+        return
+    }
+    
+
+    let analData
+
+    try {
+        analData = await Analytics.find({id: "analytics"})
+    } catch (err) {
+        console.log(err)
+    }
+    
+
+    return res.send({success: true, data: analData})
+})
+
+router.delete("/resetAnal/", async(req, res)=>{
+    if( 
+        req.body.captcha === undefined ||
+        req.body.captcha === "" ||
+        req.body.captcha === null
+    ){
+        return res.send({success: false, msg: "Please complete captcha"})
+    }
+    const query = stringify({
+        secret: secretKey,
+        response: req.body.captcha,   
+        remoteip: req.connection.remoteAddress
+      });
+
+      const verifyURL = `https://google.com/recaptcha/api/siteverify?${query}`;
+    
+    
+    const body = await fetch(verifyURL).then(res => res.json())
+
+    // console.log(body)
+
+    if(body.success !== true){
+
+        
+        return res.send({success: false, msg: "Failed to complete captcha."})
+    }
+
+
+
+    if (req.body.password !== analPassword){
+        return
+    }
+
+    try {
+        await Analytics.find({id: "analytics"}).deleteMany()
+    } catch (error) {
+        console.log(err)
+    }
+})
+
 
 
 function CodeGenerator(codeLength){
@@ -398,6 +487,7 @@ function CodeGenerator(codeLength){
 
     return result;    
 }
+
 
 
 

@@ -5,6 +5,7 @@ import BanHammer from "../assets/hammer.svg"
 import Axios from "axios"
 import Modal from "react-bootstrap/Modal"
 import Button from "react-bootstrap/Button"
+import CookieLaw from './CookieLaw'
 
 // import { set } from 'mongoose';
 
@@ -142,6 +143,8 @@ export default function Room(props) {
         </Modal.Footer>
       </Modal>
         </div>
+        <CookieLaw/>
     </div>
+    
     )
 }
