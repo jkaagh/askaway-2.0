@@ -8,7 +8,18 @@ export default function CookieLaw() {
 
     const handleClose = () => {
         setShow(false);
-        document.cookie = "AskawayCookiesAllowed=true"
+        // let date = new Date()
+        // let time = (Math.floor(new Date().getTime()/1000.0) + (60 * 60 * 24 * 365 * 10))
+        // let d = new Date(time)
+        // console.log(time)
+
+        let d = new Date();
+        let time = d.getTime()
+        let tomorrow = time + 900000000000
+        d = new Date(tomorrow);
+        console.log(d)
+
+        document.cookie = "AskawayCookiesAllowed=true; expires=" + d + ""
     } 
         
     

@@ -40,9 +40,11 @@ export default function Admin() {
 
     
     const handleReset = (value) => {
-        Axios.delete("https://askawayapp.herokuapp.com/resetAnal", {password: password, captcha: captchaValue} )
+        // http://localhost:3001
+        // https://askawayapp.herokuapp.com
+        Axios.post("https://askawayapp.herokuapp.com/resetAnal", {password: password, captcha: captchaValue} )
         .then((response) => {
-            console.log(captchaValue)
+            
             console.log(response.data)
             setAnalData(
                 [   

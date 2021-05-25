@@ -389,7 +389,7 @@ router.post("/banuser/", async(req, res) => {
 })
 
 router.post("/analytics/", async(req, res) => {
-
+    
     if( 
         req.body.captcha === undefined ||
         req.body.captcha === "" ||
@@ -435,7 +435,8 @@ router.post("/analytics/", async(req, res) => {
     return res.send({success: true, data: analData})
 })
 
-router.delete("/resetAnal/", async(req, res)=>{
+router.post("/resetAnal/", async(req, res)=>{
+    
     if( 
         req.body.captcha === undefined ||
         req.body.captcha === "" ||
@@ -465,14 +466,22 @@ router.delete("/resetAnal/", async(req, res)=>{
 
 
     if (req.body.password !== analPassword){
-        return
+        return res.send("wrong password")
     }
 
+    let anal
     try {
-        await Analytics.find({id: "analytics"}).deleteMany()
+        anal = await Analytics.find({id: "analytics"})
     } catch (error) {
         console.log(err)
     }
+
+    anal[0].rooms = 0;
+    anal[0].users = 0;
+    anal[0].questions = 0;
+    anal[0].save()
+
+    return res.send("successfully deleted stuff");
 })
 
 
