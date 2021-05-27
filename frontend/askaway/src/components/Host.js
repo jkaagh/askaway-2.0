@@ -6,6 +6,7 @@ import Axios from "axios"
 import Modal from "react-bootstrap/Modal"
 import Button from "react-bootstrap/Button"
 import CookieLaw from './CookieLaw'
+import CreatePoll from "./CreatePoll"
 
 // import { set } from 'mongoose';
 
@@ -94,54 +95,68 @@ export default function Room(props) {
     const handleShow = () => setShow(true);
     
     return (
-        <div className="container " id="QuestionsContainer">
+    <div className="container " id="QuestionsContainer">
         <div className="container">
             <h3 className="pt-4 text-center ">Room Code: {props.match.params.id}</h3>
-            <table className="table table-striped table-bordered text-left customTable">
-                <tbody id="tableBody">
-                    <tr>
-                        <th className="text-center"width="50px">#</th>
-                        <th className="text-center" width="50px">ID</th>
-                        <th className="px-3">Question</th>
-                        <th className="text-center" width="50px">Ban</th>
-                    </tr>
-                    {data && data.map((question, index) => {
-                        return(
-                            <tr key={index}>
-                                <td className="text-center"> {index + 1}</td>
-                                <td className="text-center">{question.userId}</td>
-                                <td className="text-left px-3">{question.question}</td>
-                                <td onClick={() => handleBanClick(question.userId)} className="text-center">
-                                    <div>
-                                        <img alt="ban user" src={BanHammer}></img>
-                                    </div>
-                                </td>
-                            </tr>
-                        )
-                    })}
-                </tbody>
-            </table>
-
-            <div className="text-center">
+            
+            <div className="text-center w-md-50 m-auto">
                 <span className={classList}>
                     {message}
                 </span>
             </div>
 
+            <div className="row">
+                <div className="container-fluid border-right p-4 col-12 col-md-8">
+                    <h4 className=" text-center m-auto">Questions</h4>
+                    <p className="text-center">
+                        View all questions, user ID's and shadowban.
+                    </p>    
+                    <table className="table table-striped table-bordered text-left customTable">
+                        <tbody id="tableBody">
+                            <tr>
+                                <th className="text-center" width="50px">#</th>
+                                <th className="text-center" width="50px">ID</th>
+                                <th className="px-3">Question</th>
+                                <th className="text-center" width="50px">Ban</th>
+                            </tr>
+                            {data && data.map((question, index) => {
+                                return(
+                                    <tr key={index}>
+                                        <td className="text-center"> {index + 1}</td>
+                                        <td className="text-center">{question.userId}</td>
+                                        <td className="text-left px-3">{question.question}</td>
+                                        <td onClick={() => handleBanClick(question.userId)} className="text-center">
+                                            <div>
+                                                <img alt="ban user" src={BanHammer}></img>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                )
+                            })}
+                        </tbody>
+                    </table>
+                </div>
+                <div className="container-fluid border-start p-4 col-12 col-md-4 order-first order-md-last">
+                        <CreatePoll/>
+                </div>
+            </div>
+            
             <Modal show={show} onHide={handleClose}>
-        <Modal.Header>
-          <Modal.Title>Ban user?</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>Are you sure you want to ban user '{userToBan}'? You will not recieve any questions and the user will not be notified. <b>This cannot be undone.</b></Modal.Body>
-        <Modal.Footer>
-          <Button variant="danger" onClick={handleBan}>
-            Confirm
-          </Button>
-          <Button variant="primary" onClick={handleClose}>
-            Cancel
-          </Button>
-        </Modal.Footer>
-      </Modal>
+                <Modal.Header>
+                    <Modal.Title>Ban user?</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>Are you sure you want to ban user '{userToBan}'? You will not recieve any questions and the user will not be notified. <b>This cannot be undone.</b></Modal.Body>
+                <Modal.Footer>
+                    <Button variant="danger" onClick={handleBan}>
+                        Confirm
+                    </Button>
+                    <Button variant="primary" onClick={handleClose}>
+                        Cancel
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+            
+            
         </div>
         <CookieLaw/>
     </div>
