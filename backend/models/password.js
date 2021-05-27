@@ -16,6 +16,11 @@ const passwordSchema = new mongoose.Schema({
     userId: {
         type: String,
         require: true,
+    },
+    socketId:{ //used to send websocket stuff to client
+        type: String,
+        require: false,
+
     }
 })
 module.exports = mongoose.model("password", passwordSchema)

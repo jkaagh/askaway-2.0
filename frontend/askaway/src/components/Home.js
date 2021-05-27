@@ -5,9 +5,13 @@ import ReCaptcha from "react-google-recaptcha"
 import cookie from 'react-cookies'
 import PreviousRoom from "./PreviousRoom"
 import CookieLaw from "./CookieLaw"
+import {address} from "./serverAdress"
 
 
 export default function Home() {
+
+ 
+
     let history = useHistory();
 
     const [inputValue, setInputValue] = useState("")
@@ -20,6 +24,7 @@ export default function Home() {
 
     //this entire thing is just for clicking enter to fire a function
     useEffect(() => {
+        console.log(address)
         const listener = event => {
             if (event.code === "Enter" || event.code === "NumpadEnter") {
                 event.preventDefault();
@@ -31,7 +36,7 @@ export default function Home() {
         return () => {
             document.removeEventListener("keydown", listener);
         };
-    },)
+    },[])
 
     const handleChange = (target) => {
         setInputValue(target.toUpperCase())
@@ -40,7 +45,7 @@ export default function Home() {
     const handleCreate = () => {
         setCreateText("Loading...")
 
-        Axios.post("https://askawayapp.herokuapp.com/createroom", { captcha: captchaValue, })
+        Axios.post(address + "/createroom", { captcha: captchaValue, })
             .then((response) => {
                 if (response.data.success === false) {
                     setCaptchaWarning(response.data.msg)
@@ -77,7 +82,8 @@ export default function Home() {
         setJoinText("Loading...");
         let existingPassword = cookie.load("userPassword" + inputValue + "");
         // console.log(existingPassword)
-        Axios.post("https://askawayapp.herokuapp.com/joinroom", { captcha: captchaValue, existingPassword: existingPassword, room: inputValue })
+        Axios.post(address + "/joinroom", { captcha: captchaValue, existingPassword: existingPassword, room: inputValue })
+        // Axios.post("https://askawayapp.herokuapp.com/joinroom", { captcha: captchaValue, existingPassword: existingPassword, room: inputValue })
             .then((response) => {
                 
                 if (response.data.success === false) {

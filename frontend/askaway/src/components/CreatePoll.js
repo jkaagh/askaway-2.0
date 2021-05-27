@@ -1,6 +1,7 @@
 import React, {useState, useEffect, useRef} from "react"
 import Axios from "axios"
 import {io} from "socket.io-client"
+import {address} from "./serverAdress"
 
 export default function () {
     
@@ -22,12 +23,12 @@ export default function () {
 
     useEffect(() => {
 		//connect to the server
-		// socketRef.current = io.connect("https://askawayapp.herokuapp.com"); 
-		socketRef.current = io.connect("http://localhost:3001"); 
+		 
+		socketRef.current = io.connect(address); 
 		// socketRef.current.emit
 		socketRef.current.on("pollUpdate", ({data}) => {
 	
-            //respond to new updates here
+            //respond to new answers here
 		});
 	}, [])
 

@@ -2,10 +2,14 @@ import React, {useState, useEffect, useRef} from 'react'
 import cookie from 'react-cookies'  
 import {io} from "socket.io-client"
 import CookieLaw from './CookieLaw';
+import {address} from "./serverAdress"
 
 //as soon as i load the room, check for user and admin password. do server calls dependant on which one i find.
 //user only posts, admin can also request from server.
 export default function Room(props) {
+
+    
+    // let serverAdress = "https://askawayapp.herokuapp.com"
 
     const [roomId] = useState(props.match.params.id);
     const [userId, setUserId] = useState()
@@ -38,7 +42,8 @@ export default function Room(props) {
 
     useEffect(() => {
 		//connect to the server
-		socketRef.current = io.connect("https://askawayapp.herokuapp.com"); 
+		// socketRef.current = io.connect("https://askawayapp.herokuapp.com"); 
+		socketRef.current = io.connect(address); 
 		// socketRef.current.emit
 		socketRef.current.on("RoomMessage", ({ msg, success }) => {
 			if (success === false) {
@@ -49,8 +54,10 @@ export default function Room(props) {
                 setClassList("text-primary d-block")
                 setMessage(msg)
             }
-            
+
 		});
+        socketRef.current.emit("setSocketId") //sends nothing to the server 
+        //to let the server know this client is part the room, with socketId.
 	}, [])
 
 

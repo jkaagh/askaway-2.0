@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react'
 import ReCaptcha from "react-google-recaptcha"
 import Axios from "axios"
+import {address} from './serverAdress'
 
 export default function Admin() {
 
@@ -13,7 +14,7 @@ export default function Admin() {
 
 
     const handleSubmit = () => {
-        Axios.post("https://askawayapp.herokuapp.com/analytics", {password: password, captcha: captchaValue} )
+        Axios.post(address + "/analytics", {password: password, captcha: captchaValue} )
         .then((response) => {
             setAnalData(response.data.data)
             setAllowed(response.data.success)
@@ -42,7 +43,7 @@ export default function Admin() {
     const handleReset = (value) => {
         // http://localhost:3001
         // https://askawayapp.herokuapp.com
-        Axios.post("https://askawayapp.herokuapp.com/resetAnal", {password: password, captcha: captchaValue} )
+        Axios.post(address + "/resetAnal", {password: password, captcha: captchaValue} )
         .then((response) => {
             
             console.log(response.data)

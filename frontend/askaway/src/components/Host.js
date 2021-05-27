@@ -7,6 +7,7 @@ import Modal from "react-bootstrap/Modal"
 import Button from "react-bootstrap/Button"
 import CookieLaw from './CookieLaw'
 import CreatePoll from "./CreatePoll"
+import {address} from "./serverAdress"
 
 // import { set } from 'mongoose';
 
@@ -25,7 +26,7 @@ export default function Room(props) {
 
     useEffect(() => {
         //connect to the server
-        socketRef.current = io.connect("https://askawayapp.herokuapp.com") //hvad er .current?
+        socketRef.current = io.connect(address) //hvad er .current?
         
 
         //sends on startup to validate a few things.
@@ -71,7 +72,7 @@ export default function Room(props) {
         
         console.log(userToBan)
         
-        Axios.post("https://askawayapp.herokuapp.com/banuser/", {
+        Axios.post(address + "/banuser/", {
             password: cookie.load("adminPassword" + roomId + ""),
             userId: userToBan,
             roomId: roomId

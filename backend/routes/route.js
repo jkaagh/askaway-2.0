@@ -14,6 +14,7 @@ router = express.Router();
 
 const secretKey = process.env.PRIVATE_KEY
 const analPassword = process.env.ANALYTICS_PASSWORD
+const devMode = require("../devMode")
 
 
 router.post("/createroom/", async(req, res) => {
@@ -22,7 +23,10 @@ router.post("/createroom/", async(req, res) => {
         req.body.captcha === "" ||
         req.body.captcha === null
     ){
-        return res.send({success: false, msg: "Please complete captcha"})
+        if(!devMode.enabled){
+            return res.send({success: false, msg: "Please complete captcha"})
+        }
+
     }
     const query = stringify({
         secret: secretKey,
@@ -38,9 +42,10 @@ router.post("/createroom/", async(req, res) => {
     // console.log(body)
 
     if(body.success !== true){
-        return res.send({success: false, msg: "Failed to complete captcha."})
+        if(!devMode.enabled){
+            return res.send({success: false, msg: "Failed to complete captcha."})
+        }
     }
-
     //if everything worked out, run this:
 
     let bannedRooms =[
@@ -123,7 +128,9 @@ router.post("/joinroom/", async(req, res) =>{
         req.body.captcha === "" ||
         req.body.captcha === null
     ){
-        return res.send({success: false, msg: "Please complete captcha"})
+        if(!devMode.enabled){
+            return res.send({success: false, msg: "Please complete captcha"})
+        }
     }
     const query = stringify({
         secret: secretKey,
@@ -140,8 +147,9 @@ router.post("/joinroom/", async(req, res) =>{
 
     if(body.success !== true){
 
-        
-        return res.send({success: false, msg: "Failed to complete captcha."})
+        if(!devMode.enabled){            
+            return res.send({success: false, msg: "Failed to complete captcha."})
+        }
     }
 
     
@@ -395,7 +403,9 @@ router.post("/analytics/", async(req, res) => {
         req.body.captcha === "" ||
         req.body.captcha === null
     ){
-        return res.send({success: false, msg: "Please complete captcha"})
+        if(!devMode.enabled){
+            return res.send({success: false, msg: "Please complete captcha"})
+        }
     }
     const query = stringify({
         secret: secretKey,
@@ -411,15 +421,17 @@ router.post("/analytics/", async(req, res) => {
     // console.log(body)
 
     if(body.success !== true){
-
-        
-        return res.send({success: false, msg: "Failed to complete captcha."})
+        if(!devMode.enabled){
+            return res.send({success: false, msg: "Failed to complete captcha."})
+        }
     }
 
 
 
     if (req.body.password !== analPassword){
-        return
+        if(!devMode.enabled){            
+            return
+        }
     }
     
 
@@ -442,7 +454,9 @@ router.post("/resetAnal/", async(req, res)=>{
         req.body.captcha === "" ||
         req.body.captcha === null
     ){
-        return res.send({success: false, msg: "Please complete captcha"})
+        if(!devMode.enabled){
+            return res.send({success: false, msg: "Please complete captcha"})
+        }
     }
     const query = stringify({
         secret: secretKey,
@@ -458,9 +472,11 @@ router.post("/resetAnal/", async(req, res)=>{
     // console.log(body)
 
     if(body.success !== true){
-
         
-        return res.send({success: false, msg: "Failed to complete captcha."})
+        if(!devMode.enabled){
+            return res.send({success: false, msg: "Failed to complete captcha."})
+        }
+        
     }
 
 

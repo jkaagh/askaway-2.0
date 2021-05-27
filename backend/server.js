@@ -7,6 +7,7 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const path = require("path")
 
+
 const config = require("./config")
 app.use(express.urlencoded({ extended: false }))
 app.use(express.json())
@@ -252,10 +253,13 @@ io.on("connection", function(socket){
         
 	})
 
+    socket.on("setSocketId", async function(){
+        console.log("this ran")
+    })
     socket.on("postPoll", async function(data){
 
         //validate that this is indeed a poll.
-        
+
 
         //todo make client have specific ID to send to.
 
@@ -267,7 +271,7 @@ io.on("connection", function(socket){
 
 //runs as soon as server connected to database.
  const handleCleanup = async () => {
-    console.log("ass")
+    
 
     let cleanupObj
     try{
