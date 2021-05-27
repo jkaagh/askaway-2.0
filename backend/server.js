@@ -251,6 +251,15 @@ io.on("connection", function(socket){
         })
         
 	})
+
+    socket.on("postPoll", async function(data){
+
+        //validate that this is indeed a poll.
+        
+
+        //todo make client have specific ID to send to.
+
+    })
 })
 
 
