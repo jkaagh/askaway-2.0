@@ -126,7 +126,7 @@ io.on("connection", function(socket){
     socket.on("postQuestion", async function(data){
 		// do the post question i did in route here
 
-		console.log(data);
+		
 		//check if client sent a password.
 		if (data.password === undefined) {
 			return socket.emit("RoomMessage", {
@@ -177,7 +177,7 @@ io.on("connection", function(socket){
 				msg: "Error: Error finding password.",
 			});
 		}
-		console.log(password);
+		
 
 		//if password doesnt exist in the database.
 		//what the fuck is this for? I dont think this ever runs. But im keeping it since theres
@@ -253,12 +253,59 @@ io.on("connection", function(socket){
         
 	})
 
-    socket.on("setSocketId", async function(){
-        console.log("this ran")
+    socket.on("setSocketId", async function(data){
+        
+        let user
+        try {
+            user = await Password.find({password: data.password})
+        } catch (error) {
+            console.log(error)
+        }
+
+        user[0].socketId = socket.id
+
+        try {
+            user[0].save()
+        } catch (error) {   
+            console.log(error)
+        }
+
+        console.log(user[0])
     })
+
     socket.on("postPoll", async function(data){
 
+        //validate if i am admin.
+        let admin
+        try {
+            admin = await Room.find({adminPassword: data.password})
+        } catch (error) {
+            console.log(error)
+        }
+
+        if(admin.length === 0){
+            return socket.emit("message", {success: false, msg: "Password not found. You appear to not have hosted this room. If this isn't the case, make sure you aren't using a different browser or incognito mode."})
+        }
+
+
         //validate that this is indeed a poll.
+
+        if(Array.isArray(data.pollData)){
+
+        }
+        else{
+            return
+        }
+
+        if(data.pollData.length < 2){
+            return socket.emit("message", {success: false, msg: "You need at least two options to create your poll."})
+        }
+        
+        if(data.pollData.length > 10){
+            return socket.emit("message", {success: false, msg: "You can only have a maximum of 10 options."})
+        }
+        
+        
 
 
         //todo make client have specific ID to send to.

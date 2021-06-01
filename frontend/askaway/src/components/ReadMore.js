@@ -1,10 +1,14 @@
-import React from 'react'
+import React, {useState, useEffect} from 'react'
 import "../styles.css"
 import CookieLaw from './CookieLaw'
 
 export default function ReadMore() {
+
+
+
     return (
         <div className="container text-center">
+
         <a href="/" id="" className="alert-link">Go back</a>
             <h1 className="display-4">What is Askaway?</h1>
             <p className="readmoreText d-none d-sm-block">

@@ -166,7 +166,7 @@ router.post("/joinroom/", async(req, res) =>{
     //finds the room with code provided.
     try{
         existingRoom = await Room.find({roomId: req.body.room}) //will return an array of maximum 1 room. 
-        
+        console.log(req.body.room)
         //if room doesnt exist, it returns empty array
     }catch(err){
         return res.send({success: false, msg: "An error occured while trying to find the room"})
@@ -480,9 +480,10 @@ router.post("/resetAnal/", async(req, res)=>{
     }
 
 
-
-    if (req.body.password !== analPassword){
-        return res.send("wrong password")
+    if(!devMode.enabled){
+        if (req.body.password !== analPassword){
+            return res.send("wrong password")
+        }
     }
 
     let anal

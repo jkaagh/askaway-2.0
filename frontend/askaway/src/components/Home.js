@@ -23,23 +23,11 @@ export default function Home() {
     
 
     //this entire thing is just for clicking enter to fire a function
-    useEffect(() => {
-        console.log(address)
-        const listener = event => {
-            if (event.code === "Enter" || event.code === "NumpadEnter") {
-                event.preventDefault();
-                handleJoin()
-            }
-        };
-        document.addEventListener("keydown", listener);
 
-        return () => {
-            document.removeEventListener("keydown", listener);
-        };
-    },[])
 
     const handleChange = (target) => {
         setInputValue(target.toUpperCase())
+        
     }
 
     const handleCreate = () => {
@@ -82,6 +70,7 @@ export default function Home() {
         setJoinText("Loading...");
         let existingPassword = cookie.load("userPassword" + inputValue + "");
         // console.log(existingPassword)
+        console.log(inputValue)
         Axios.post(address + "/joinroom", { captcha: captchaValue, existingPassword: existingPassword, room: inputValue })
         // Axios.post("https://askawayapp.herokuapp.com/joinroom", { captcha: captchaValue, existingPassword: existingPassword, room: inputValue })
             .then((response) => {
@@ -136,7 +125,19 @@ export default function Home() {
 
 
             <div className="container w-sm-50">
-                <input onChange={(e) => handleChange(e.target.value)} value={inputValue} id="codeInput" className="form-control text-center customInput" type="text" placeholder="Type room code here to join" name="askawayInput" />
+                <input 
+                onChange={(e) => handleChange(e.target.value)}
+                onKeyPress={(e) => {
+                    if(e.key === "Enter"){
+                        handleJoin()
+                        
+                    }
+                }} 
+                value={inputValue} id="codeInput" 
+                className="form-control text-center customInput" 
+                type="text" placeholder="Type room code here to join" 
+                name="askawayInput" 
+                />
 
                 <div className="container d-flex flex-wrap justify-content-center mt-4">
                     <ReCaptcha

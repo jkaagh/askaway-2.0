@@ -67,7 +67,7 @@ export default function Admin() {
                         ref={(r) => setCaptchaRef(r)}
                     /> 
                     
-            <input placeholder="password" onChange={(e) => setPassword(e.target.value)}>
+            <input type="password" placeholder="password" onChange={(e) => setPassword(e.target.value)}>
 
             </input>
             <button onClick={handleSubmit}>

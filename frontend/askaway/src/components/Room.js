@@ -9,7 +9,7 @@ import {address} from "./serverAdress"
 export default function Room(props) {
 
     
-    // let serverAdress = "https://askawayapp.herokuapp.com"
+    
 
     const [roomId] = useState(props.match.params.id);
     const [userId, setUserId] = useState()
@@ -22,19 +22,6 @@ export default function Room(props) {
         setUserId(cookie.load("userId" + roomId + ""))
         
     }, [])
-
-    useEffect(() => {
-        const listener = event => {
-            if (event.code === "Enter" || event.code === "NumpadEnter") {
-                event.preventDefault();
-                handlePost()
-            }
-        };
-        document.addEventListener("keydown", listener);
-        return () => {
-            document.removeEventListener("keydown", listener);
-        };
-    },)
 
 
     //socketio stuff
@@ -56,7 +43,8 @@ export default function Room(props) {
             }
 
 		});
-        socketRef.current.emit("setSocketId") //sends nothing to the server 
+        let password = cookie.load("userPassword" + roomId + "")
+        socketRef.current.emit("setSocketId", {password: password}) //sends nothing to the server 
         //to let the server know this client is part the room, with socketId.
 	}, [])
 
@@ -104,7 +92,23 @@ export default function Room(props) {
         <div className="container">
             <h3 className="pt-4">Room Code: {roomId}</h3>
             <h4 className="pb-4">Your ID: {userId}</h4>
-            <textarea onChange={(e) => setInputValue(e.target.value)} value={inputValue} type="text" rows="5" maxLength="200" className="customInput form-control " placeholder="Type your question here" aria-label="" aria-describedby="basic-addon1>"  />
+            <textarea 
+            onChange={(e) => setInputValue(e.target.value)} 
+            onKeyPress={(e) => {
+                if(e.key === "Enter"){
+                    handlePost()
+                    e.preventDefault();
+                }
+            }} 
+            value={inputValue} 
+            type="text" 
+            rows="5" 
+            maxLength="200" 
+            className="customInput form-control " 
+            placeholder="Type your question here" 
+            aria-label="" 
+            aria-describedby="basic-addon1>"  
+            />
             
             <span className={classList}>
                 {message}

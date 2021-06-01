@@ -2,8 +2,9 @@ import React, {useState, useEffect, useRef} from "react"
 import Axios from "axios"
 import {io} from "socket.io-client"
 import {address} from "./serverAdress"
+import cookie from 'react-cookies'
 
-export default function () {
+export default function (props) {
     
     const [pollData, setPollData] = useState(
         [
@@ -18,7 +19,8 @@ export default function () {
     const [pollInfo, setPollInfo] = useState("d-none")
     const [checkbox, setCheckbox] = useState(false)
 
-
+    
+    
     const socketRef = useRef()
 
     useEffect(() => {
@@ -53,7 +55,7 @@ export default function () {
 
     const handlePost = () =>{
         console.log(pollData)
-        socketRef.current.emit("postPoll", {pollData: pollData, pollTitle: pollTitle, checkbox: checkbox })
+        // socketRef.current.emit("postPoll", {pollData: pollData, pollTitle: pollTitle, checkbox: checkbox, password: cookie.load("adminPassword" + props + ""), })
     }
 
     

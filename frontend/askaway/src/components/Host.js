@@ -138,7 +138,7 @@ export default function Room(props) {
                     </table>
                 </div>
                 <div className="container-fluid border-start p-4 col-12 col-md-4 order-first order-md-last">
-                        <CreatePoll/>
+                        <CreatePoll roomId={roomId} kurt="asssddddd"/>
                 </div>
             </div>
             

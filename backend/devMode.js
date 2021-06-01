@@ -10,7 +10,7 @@ if( analPassword != undefined){
     devMode.enabled = false;
 }
 
-console.log(devMode)
-console.log(analPassword)
+console.log("devMode: ", devMode.enabled)
+
 
 module.exports = devMode
