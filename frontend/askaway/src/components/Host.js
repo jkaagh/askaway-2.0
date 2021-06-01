@@ -98,7 +98,7 @@ export default function Room(props) {
     return (
     <div className="container " id="QuestionsContainer">
         <div className="container">
-            <h3 className="pt-4 text-center ">Room Code: {props.match.params.id}</h3>
+            <h3 className="pt-4 text-center ">Room Code: <u>{props.match.params.id}</u></h3>
             
             <div className="text-center w-md-50 m-auto">
                 <span className={classList}>
@@ -138,7 +138,7 @@ export default function Room(props) {
                     </table>
                 </div>
                 <div className="container-fluid border-start p-4 col-12 col-md-4 order-first order-md-last">
-                        <CreatePoll roomId={roomId} kurt="asssddddd"/>
+                        <CreatePoll roomId={roomId}/>
                 </div>
             </div>
             

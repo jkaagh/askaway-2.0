@@ -72,6 +72,7 @@ const Question      = require("./models/question")
 const Room          = require("./models/room")
 const Cleanup       = require("./models/cleanup")
 const Analytics     = require("./models/analytics")
+const Poll          = require("./models/poll")
 
 
 
@@ -262,6 +263,7 @@ io.on("connection", function(socket){
             console.log(error)
         }
 
+        //crashes if i dont send socketid obviously.
         user[0].socketId = socket.id
 
         try {
@@ -271,6 +273,22 @@ io.on("connection", function(socket){
         }
 
         console.log(user[0])
+
+
+        //get poll
+        let poll
+        try {
+            poll = await Poll.find({roomId: user[0].roomId})
+        } catch (error) {   
+            console.log(error)
+        }
+
+        if(poll[0].length !== 0){
+            socket.emit("SendPoll", {
+                pollData: poll[0].pollData,
+                pollTitle: poll[0].pollTitle
+             })
+        }
     })
 
     socket.on("postPoll", async function(data){
@@ -294,21 +312,100 @@ io.on("connection", function(socket){
 
         }
         else{
-            return
+            return socket.emit("message", {success: true, msg: "Poll successfully published!"})
+            //trolololol
         }
 
+       //input validation
+
+        let doReturn = false;
+
+        data.pollData.forEach(element => {
+            if(typeof element !== "string"){
+                doReturn = true;
+            }
+            if(element === ""){
+                doReturn = true;
+            }
+            if(element.length > 50){
+                doReturn = true;
+            }
+            if(doReturn) return //hops out of loop
+        });
+ 
+        
+        if(doReturn) return socket.emit("message", {success: true, msg: "Poll successfully published!"})
+
         if(data.pollData.length < 2){
-            return socket.emit("message", {success: false, msg: "You need at least two options to create your poll."})
+            return socket.emit("message", {success: true, msg: "Poll successfully published!"})
         }
         
         if(data.pollData.length > 10){
-            return socket.emit("message", {success: false, msg: "You can only have a maximum of 10 options."})
+            return socket.emit("message", {success: true, msg: "Poll successfully published!"})
         }
+
+        if(typeof data.pollTitle !== "string") return socket.emit("message", {success: true, msg: "Poll successfully published!"})
+
+        if(data.pollTitle === "") return socket.emit("message", {success: true, msg: "Poll successfully published!"})
         
+        if(data.pollTitle.length > 50) return socket.emit("message", {success: false, msg: "Not so fast."})
         
+        //theres absolutely a better way i just cant be bothered to figure it out.
+        let checkboxtest = false;
+        if(data.checkbox === true){
+            checkboxtest = true;
+        }
+        if(data.checkbox === false){
+            checkboxtest = true;
+        }
+        if(checkboxtest === false) return socket.emit("message", {success: true, msg: "Poll successfully published!"})
 
 
-        //todo make client have specific ID to send to.
+        
+        //send to all clients.
+        
+        //find all users in this room
+
+
+        
+        //push to database
+        const pollObject = new Poll({
+            roomId: admin[0].roomId,
+            pollData: data.pollData,
+            pollTitle: data.pollTitle,
+            locked: data.checkbox,
+        })
+        try {
+            await pollObject.save()
+        } catch (error) {
+            console.log(error)
+            return socket.emit("message", {success: false, msg: "Server error: Could not create poll. Try again later."})
+        }
+
+
+        let users
+        try {
+            users = await Password.find({roomId: admin[0].roomId}) //gets the roomId from admin object
+            //also this ensures you cannot send to any other room.
+        } catch (error) {
+            console.log(error)
+        }
+
+        let userSocketIds = []
+        users.forEach(user => {
+            userSocketIds.push(user.socketId)
+        });
+
+        //send to all clients.
+        io.to(userSocketIds).emit("SendPoll", {
+           pollData: data.pollData,
+           pollTitle: data.pollTitle
+        })
+        
+        return socket.emit("message", {success: true, msg: "Poll successfully publishezzzzzd!"})
+
+        
+        
 
     })
 })

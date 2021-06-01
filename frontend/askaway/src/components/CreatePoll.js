@@ -32,6 +32,10 @@ export default function (props) {
 	
             //respond to new answers here
 		});
+
+        socketRef.current.on("message", (data) => {
+            console.log(data)
+        })
 	}, [])
 
     const handleDelete = (i) => {
@@ -55,7 +59,9 @@ export default function (props) {
 
     const handlePost = () =>{
         console.log(pollData)
-        // socketRef.current.emit("postPoll", {pollData: pollData, pollTitle: pollTitle, checkbox: checkbox, password: cookie.load("adminPassword" + props + ""), })
+        console.log(props.roomId)
+        console.log(checkbox)
+        socketRef.current.emit("postPoll", {pollData: pollData, pollTitle: pollTitle, checkbox: checkbox, password: cookie.load("adminPassword" + props.roomId + ""), })
     }
 
     
