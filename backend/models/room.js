@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const RoomSchema = new mongoose.Schema({
 
     roomId:{
-        type: String,
+        type: String, //LJSH
         require: true
     },
     // deprecated: used elsewhere for performance

@@ -17,10 +17,15 @@ const passwordSchema = new mongoose.Schema({
         type: String,
         require: true,
     },
-    socketId:{ //used to send websocket stuff to client
+    socketId:{ //used to send websocket stuff to 
         type: String,
         require: false,
 
-    }
+    },
+    pollChoice: {
+        type: Number,
+        required: true,
+        default: -1,
+    }    
 })
 module.exports = mongoose.model("password", passwordSchema)

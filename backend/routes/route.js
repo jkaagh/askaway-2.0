@@ -66,7 +66,8 @@ router.post("/createroom/", async(req, res) => {
         "ANAL",
         "PUSS",
         "PUSY",
-        "PUSI",   
+        "PUSI",  
+        "TEST", //used for dev purposes.
     ]
     let roomCode
     // let test = 0;
@@ -75,10 +76,6 @@ router.post("/createroom/", async(req, res) => {
         finished = true;
         roomCode = CodeGenerator(4)
         
-        // if(test < 3){
-        //     roomCode = "RAPE"
-        // }
-        // test++;
         console.log(roomCode)
 
         let existingRoom
@@ -170,6 +167,16 @@ router.post("/joinroom/", async(req, res) =>{
         //if room doesnt exist, it returns empty array
     }catch(err){
         return res.send({success: false, msg: "An error occured while trying to find the room"})
+    }
+
+
+    //room TEST is used for testing network stuff.
+    if(req.body.room === "TEST"){
+        if(!devMode.enabled){
+            return res.send({ success: false, msg: "Room not found" })
+        }
+
+
     }
 
 

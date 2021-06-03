@@ -72,9 +72,11 @@ const Question      = require("./models/question")
 const Room          = require("./models/room")
 const Cleanup       = require("./models/cleanup")
 const Analytics     = require("./models/analytics")
-const Poll          = require("./models/poll")
+const Poll          = require("./models/poll");
+const { copyFileSync } = require("fs");
 
-
+// mongoose.set("debug", true)
+// mongoose.set('useFindAndModify', false);
 
 io.on("connection", function(socket){
     // console.log("New WS connection")
@@ -224,7 +226,7 @@ io.on("connection", function(socket){
         const question = new Question({
             question: data.question,
             userId: password[0].userId,
-            roomId: data.roomId,
+            roomId: password[0].roomId,
         })
 
         question.save();
@@ -234,11 +236,11 @@ io.on("connection", function(socket){
             msg: "Successfully posted question!"
         })
 
-        console.log("ass")
+     
         //find admin socketid and emit to the host
         let room
         try {
-			room = await Room.find({ roomId: data.roomId });
+			room = await Room.find({ roomId: password[0].roomId });
 		} catch (err) {
 			console.log(err)
 		}
@@ -249,7 +251,7 @@ io.on("connection", function(socket){
         io.to(socketid).emit("SingleQuestion", {
             question: data.question,
             userId: password[0].userId,
-            roomId: data.roomId,
+            roomId: password[0].roomId,
         })
         
 	})
@@ -282,11 +284,17 @@ io.on("connection", function(socket){
         } catch (error) {   
             console.log(error)
         }
+        console.log(poll)
+
+        if(poll.length == 0){
+            return console.log("no poll has been created yet.")
+        }
 
         if(poll[0].length !== 0){
             socket.emit("SendPoll", {
                 pollData: poll[0].pollData,
-                pollTitle: poll[0].pollTitle
+                pollTitle: poll[0].pollTitle,
+                selected: user[0].pollChoice,
              })
         }
     })
@@ -363,15 +371,30 @@ io.on("connection", function(socket){
 
         
         //send to all clients.
-        
+
+        //create pollData with vote values aswell.
+
+        let newPollData = []
+
+        data.pollData.forEach((item) => {
+            newPollData.push(
+                {
+                    option: item,
+                    value: 0
+                }
+            )
+        })
+
+        console.log(newPollData)
+
         //find all users in this room
 
-
+        
         
         //push to database
         const pollObject = new Poll({
             roomId: admin[0].roomId,
-            pollData: data.pollData,
+            pollData: newPollData,
             pollTitle: data.pollTitle,
             locked: data.checkbox,
         })
@@ -398,15 +421,85 @@ io.on("connection", function(socket){
 
         //send to all clients.
         io.to(userSocketIds).emit("SendPoll", {
-           pollData: data.pollData,
+           pollData: newPollData,
            pollTitle: data.pollTitle
         })
         
-        return socket.emit("message", {success: true, msg: "Poll successfully publishezzzzzd!"})
+        return socket.emit("message", {success: true, msg: "Poll successfully published!"})
 
         
         
 
+    })
+
+    socket.on("sendPollAnswer", async function(data) {
+
+        //check if password is correct:
+        let user;
+        try {
+            user = await Password.find({password: data.password})
+        } catch (error) {
+            console.log(error)
+        }
+
+        if(user.length == 0) {
+            return socket.emit("message", {success: false, msg: "Error: Try joining the room from the front page, or double check that the code is correct."})
+        }
+
+        let previousChoice = user[0].pollChoice
+
+        //set his choice to what he picked.
+        user[0].pollChoice = data.choice;
+        try {
+            user[0].save()
+        } catch (error) {
+            console.log(error);
+        }
+        let newData = []
+
+        //get poll from database and edit it
+        await Poll.findOne({roomId: user[0].roomId}).then(doc => {
+            //generate copy of array           
+            doc.pollData.forEach((item) => {
+                newData.push(
+                    {option: item.option, value: item.value}
+                )
+            })
+            //this doesnt work:
+            //let newData = doc.pollData
+            //edit and save value
+            newData[data.choice].value += 1
+            if(user[0].pollChoice !== -1) newData[previousChoice].value -= 1 //if user have not voted for anything yet.
+            
+            doc.pollData = newData;
+            doc.save();
+            
+        })
+        
+        
+        
+        try {
+            users = await Password.find({roomId: user[0].roomId}) 
+            
+        } catch (error) {
+            console.log(error)
+        }
+
+        let userSocketIds = []
+        users.forEach(user => {
+            userSocketIds.push(user.socketId)
+        });
+        // console.log(userSocketIds)
+        console.log("-----------------------")
+        console.log(newData)
+        //send to all clients.
+        io.to(userSocketIds).emit("SendPoll", {
+           pollData: newData,
+           selected: data.choice    
+        })
+
+        
+    
     })
 })
 

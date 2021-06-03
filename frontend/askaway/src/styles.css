@@ -1,1 +1,12 @@
-/* No CSS *//*# sourceMappingURL=styles.css.map */
+svg {
+  transform-box: fill-box;
+  -webkit-transform-origin: center;
+          transform-origin: center;
+}
+
+.poll {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+/*# sourceMappingURL=styles.css.map */
