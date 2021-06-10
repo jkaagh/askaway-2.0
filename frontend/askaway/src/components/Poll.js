@@ -26,9 +26,15 @@ export default function Poll(props) {
          //to let the server know this client is part the room, with socketId.
  
          socketRef.current.on("SendPoll", (data) => {
-            console.log(data)
-            setPollData(data.pollData)
-            setSelected(data.selected)
+
+            if(data.pollData != undefined){
+                setPollData(data.pollData)
+            }
+
+            if(data.selected != undefined){
+                setSelected(data.selected)
+            }
+
             if(data.pollTitle != undefined){
                 setShowPoll(true)
                 setPollTitle(data.pollTitle)
@@ -37,7 +43,13 @@ export default function Poll(props) {
             
         })
 
-         
+        
+
+        //in case device disconnects, such as when a phone leaves?/closes a browser or closing your laptop.
+        socketRef.current.on("disconnect", () => {
+            window.location.reload(true)
+        })
+
      }, [])
 
     useEffect(() => { //this runs every time new polldata is recieved.
@@ -45,13 +57,10 @@ export default function Poll(props) {
        pollData.forEach((item) => {
            number = item.value + number
        })  
-       console.table(pollData)
-       console.log(number)
        setTotalVotes(number);
     }, [pollData])
 
     const handleSubmit = (index) => {
-        console.log("ass")
         let password = cookie.load("userPassword" + props.roomId + "")
         socketRef.current.emit("sendPollAnswer", {choice: index, password: password})
         setToBeSelected(index)
@@ -63,11 +72,14 @@ export default function Poll(props) {
                 <div>
                     <h4 className=" text-center m-auto">{pollTitle}</h4>
                     {pollData && pollData.map((item, index) => {
-                        console.log(item.value, totalVotes)
+                        {/* console.log(item.value, totalVotes) */}
                         let number = Math.round(item.value / totalVotes * 100)
                         {/* if(number == 99){
                             number = 100;   
                         } */}
+                        if(totalVotes == 0){
+                            number = 0;
+                        }
                         let enableBorder;
                         if(index === selected){
                             enableBorder = "border-primary"

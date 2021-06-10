@@ -73,7 +73,7 @@ const Room          = require("./models/room")
 const Cleanup       = require("./models/cleanup")
 const Analytics     = require("./models/analytics")
 const Poll          = require("./models/poll");
-const { copyFileSync } = require("fs");
+
 
 // mongoose.set("debug", true)
 // mongoose.set('useFindAndModify', false);
@@ -195,7 +195,7 @@ io.on("connection", function(socket){
 		//check the password object for lastActive if its too early to post
 		let d = new Date();
 		let today = d.getTime();
-		console.log(today - password[0].lastActive);
+		
 		//if earlier than 2.5 seconds since last post, ban user. (clientside is 3 seconds)
 		if (today - password[0].lastActive < 2500) {
 			const newFlagged = new Flagged({
@@ -265,7 +265,10 @@ io.on("connection", function(socket){
             console.log(error)
         }
 
-        //crashes if i dont send socketid obviously.
+        if(user.length === 0){
+            return;
+        }
+    
         user[0].socketId = socket.id
 
         try {
@@ -274,7 +277,7 @@ io.on("connection", function(socket){
             console.log(error)
         }
 
-        console.log(user[0])
+        
 
 
         //get poll
@@ -284,7 +287,7 @@ io.on("connection", function(socket){
         } catch (error) {   
             console.log(error)
         }
-        console.log(poll)
+        
 
         if(poll.length == 0){
             return console.log("no poll has been created yet.")
@@ -299,6 +302,47 @@ io.on("connection", function(socket){
         }
     })
 
+    //essentially exact same function as above, but for the host instead.
+    socket.on("setSocketIdHost", async function(data){
+        let admin
+
+        
+        try {
+            admin = await Room.find({adminPassword: data.adminPassword})
+        } catch (error) {
+            console.log(error);
+        }
+        if(admin.length === 0){
+            return
+        }
+        
+
+        //i dont need this because host already has his socketid saved in the database. otherwise the two functions does the same.
+        // user[0].socketId = socket.id
+         
+        //get poll
+        let poll
+        try {
+            poll = await Poll.find({roomId: admin[0].roomId})
+        } catch (error) {   
+            console.log(error)
+        }
+        
+
+        if(poll.length == 0){
+            return console.log("no poll has been created yet.")
+        }
+
+        if(poll[0].length !== 0){
+            socket.emit("SendPollHost", {
+                pollData: poll[0].pollData,
+                pollTitle: poll[0].pollTitle,
+                selected: admin[0].adminSelected,
+             })
+        }
+
+    })
+
     socket.on("postPoll", async function(data){
 
         //validate if i am admin.
@@ -308,6 +352,8 @@ io.on("connection", function(socket){
         } catch (error) {
             console.log(error)
         }
+        // console.log("-------------------admin object-----------------");
+        // console.log(admin)
 
         if(admin.length === 0){
             return socket.emit("message", {success: false, msg: "Password not found. You appear to not have hosted this room. If this isn't the case, make sure you aren't using a different browser or incognito mode."})
@@ -327,6 +373,7 @@ io.on("connection", function(socket){
        //input validation
 
         let doReturn = false;
+        let doInform = false;
 
         data.pollData.forEach(element => {
             if(typeof element !== "string"){
@@ -337,36 +384,30 @@ io.on("connection", function(socket){
             }
             if(element.length > 50){
                 doReturn = true;
+                doInform = true;
             }
+            
             if(doReturn) return //hops out of loop
         });
  
-        
-        if(doReturn) return socket.emit("message", {success: true, msg: "Poll successfully published!"})
+        if(doInform) return socket.emit("message", {success: false, msg: "Not so fast."})
+        if(doReturn) return socket.emit("message", {success: true, msg: "Poll successfully published!1"})
 
         if(data.pollData.length < 2){
-            return socket.emit("message", {success: true, msg: "Poll successfully published!"})
+            return socket.emit("message", {success: true, msg: "Poll successfully published!2"})
         }
         
         if(data.pollData.length > 10){
-            return socket.emit("message", {success: true, msg: "Poll successfully published!"})
+            return socket.emit("message", {success: true, msg: "Poll successfully published!3"})
         }
 
-        if(typeof data.pollTitle !== "string") return socket.emit("message", {success: true, msg: "Poll successfully published!"})
+        if(typeof data.pollTitle !== "string") return socket.emit("message", {success: true, msg: "Poll successfully published!3"})
 
-        if(data.pollTitle === "") return socket.emit("message", {success: true, msg: "Poll successfully published!"})
+        if(data.pollTitle === "") return socket.emit("message", {success: true, msg: "Poll successfully published!4"})
         
         if(data.pollTitle.length > 50) return socket.emit("message", {success: false, msg: "Not so fast."})
         
-        //theres absolutely a better way i just cant be bothered to figure it out.
-        let checkboxtest = false;
-        if(data.checkbox === true){
-            checkboxtest = true;
-        }
-        if(data.checkbox === false){
-            checkboxtest = true;
-        }
-        if(checkboxtest === false) return socket.emit("message", {success: true, msg: "Poll successfully published!"})
+        
 
 
         
@@ -385,7 +426,7 @@ io.on("connection", function(socket){
             )
         })
 
-        console.log(newPollData)
+        
 
         //find all users in this room
 
@@ -396,7 +437,6 @@ io.on("connection", function(socket){
             roomId: admin[0].roomId,
             pollData: newPollData,
             pollTitle: data.pollTitle,
-            locked: data.checkbox,
         })
         try {
             await pollObject.save()
@@ -413,29 +453,43 @@ io.on("connection", function(socket){
         } catch (error) {
             console.log(error)
         }
-
+        
+        // console.log("USERS -----------------------");
+        // console.log(users)
+        // console.log("-----------------------------");
         let userSocketIds = []
         users.forEach(user => {
             userSocketIds.push(user.socketId)
         });
-
+        
+        socket.emit("message", {success: true, msg: "Poll successfully published!"})
+        
+        //if a host creates a poll while no users have joined yet, he sends the poll to all users in an empty array
+        //which socket.io interprets as everyone.
+        if(userSocketIds.length === 0){ 
+            return
+        }
         //send to all clients.
         io.to(userSocketIds).emit("SendPoll", {
            pollData: newPollData,
            pollTitle: data.pollTitle
         })
         
-        return socket.emit("message", {success: true, msg: "Poll successfully published!"})
-
+        //send to host
+        io.to(admin[0].adminSocketId).emit("SendPollHost", {
+            pollData: newPollData,
+            pollTitle: data.pollTitle
+        })
         
         
 
     })
 
     socket.on("sendPollAnswer", async function(data) {
-
+        let stopAll = false;
         //check if password is correct:
         let user;
+
         try {
             user = await Password.find({password: data.password})
         } catch (error) {
@@ -465,17 +519,27 @@ io.on("connection", function(socket){
                     {option: item.option, value: item.value}
                 )
             })
-            //this doesnt work:
-            //let newData = doc.pollData
+
+            // this runs in case user voted for something which doesn't exist.
+            if(data.choice + 1 > newData.length){
+                stopAll = true;
+                return null
+            }
+
             //edit and save value
             newData[data.choice].value += 1
-            if(user[0].pollChoice !== -1) newData[previousChoice].value -= 1 //if user have not voted for anything yet.
+
+            if(previousChoice !== -1){
+                //remove previous vote   
+                newData[previousChoice].value -= 1
+            }
             
             doc.pollData = newData;
             doc.save();
             
         })
-        
+
+        if(stopAll) return // this runs in case user voted for something which doesn't exist.
         
         
         try {
@@ -489,17 +553,119 @@ io.on("connection", function(socket){
         users.forEach(user => {
             userSocketIds.push(user.socketId)
         });
-        // console.log(userSocketIds)
-        console.log("-----------------------")
-        console.log(newData)
+        
+
         //send to all clients.
         io.to(userSocketIds).emit("SendPoll", {
            pollData: newData,
-           selected: data.choice    
+             
+        })
+        socket.emit("SendPoll", {
+            selected: data.choice 
         })
 
+        //todo send to host later on
+        let admin 
+        try {
+            admin = await Room.find({roomId: user[0].roomId})
+        } catch (error) {
+            console.log(error);
+        }
+        io.to(admin[0].adminSocketId).emit("SendPoll", {
+            pollData: newData,
+            
+        })
+        
         
     
+    })
+
+    //essentially exact same function as above, but for the host instead.
+    socket.on("sendPollAnswerHost", async function(data) {
+        let stopAll = false;
+        //check if password is correct:
+        let host;
+
+        try {
+            host = await Room.find({adminPassword: data.adminPassword})
+        } catch (error) {
+            console.log(error)
+        }
+
+        if(host.length == 0) {
+            return socket.emit("message", {success: false, msg: "Error: Try joining the room from the front page, or double check that the code is correct."})
+        }
+
+        let previousChoice = host[0].adminSelected
+
+        //set his choice to what he picked.ad
+        host[0].adminSelected = data.choice;
+        try {
+            host[0].save()
+        } catch (error) {
+            console.log(error);
+        }
+        let newData = []
+
+        //get poll from database and edit it
+        await Poll.findOne({roomId: host[0].roomId}).then(doc => {
+            //generate copy of array           
+            doc.pollData.forEach((item) => {
+                newData.push(
+                    {option: item.option, value: item.value}
+                )
+            })
+
+            // this runs in case user voted for something which doesn't exist.
+            if(data.choice + 1 > newData.length){
+                stopAll = true;
+                return null
+            }
+
+            //edit and save value
+            newData[data.choice].value += 1
+
+            if(previousChoice !== -1){
+                //remove previous vote   
+                newData[previousChoice].value -= 1
+            }
+            
+            doc.pollData = newData;
+            doc.save();
+            
+        })
+
+        if(stopAll) return // this runs in case user voted for something which doesn't exist.
+        
+        //send to host
+        io.to(host[0].adminSocketId).emit("SendPoll", {
+            pollData: newData,
+            selected: data.choice    
+         })
+         
+         
+         //send to clients
+
+         let users
+         try {
+             users = await Password.find({roomId: host[0].roomId})
+         } catch (error) {
+             
+         }
+
+         let userSocketIds = []
+
+         users.forEach(user => {
+             userSocketIds.push(user.socketId)
+         });
+         
+
+         if(userSocketIds.length === 0) return
+        
+         io.to(userSocketIds).emit("SendPoll", {
+            pollData: newData,
+         })
+        
     })
 })
 
@@ -540,7 +706,7 @@ io.on("connection", function(socket){
     let today = new Date();
     
     let timeSinceLast = today.getTime() - clean.timeSinceLast
-    let hour = 3600000
+    let hour = 3_600_000
     console.log("Time since last cleanup ", timeSinceLast, " out of ", hour)
 
 
@@ -616,7 +782,7 @@ io.on("connection", function(socket){
             console.log(err)
         }
         
-        console.log(anal)
+        
 
         //check if analytics file already exists. It always will, unless i click the reset button
         let analyticsData

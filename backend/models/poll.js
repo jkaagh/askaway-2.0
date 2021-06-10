@@ -12,10 +12,6 @@ const pollSchema = new mongoose.Schema({
     pollTitle: {
         type: String,
         required: true,
-    },
-    locked: {
-        type: Boolean,
-        required: true,
     }
 })
 module.exports = mongoose.model("poll", pollSchema)

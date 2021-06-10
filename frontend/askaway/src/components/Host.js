@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useRef} from 'react'
 import {io} from "socket.io-client"
-import cookie from 'react-cookies'
+    import cookie from 'react-cookies'
 import BanHammer from "../assets/hammer.svg"
 import Axios from "axios"
 import Modal from "react-bootstrap/Modal"
@@ -8,17 +8,22 @@ import Button from "react-bootstrap/Button"
 import CookieLaw from './CookieLaw'
 import CreatePoll from "./CreatePoll"
 import {address} from "./serverAdress"
+import HostPoll from "./HostPoll"
 
 // import { set } from 'mongoose';
 
 export default function Room(props) {
 
     const [roomId] = useState(props.match.params.id);
-    const [data, setData] = useState([])
-    const [message, setMessage] = useState("")
-    const [classList, setClassList] = useState("")
-    const [userToBan, setUserToBan] = useState()
-    
+    const [data, setData]               = useState([])
+    const [message, setMessage]         = useState("")
+    const [classList, setClassList]     = useState("")
+    const [userToBan, setUserToBan]     = useState()
+    const [didPost, setDidPost]         = useState(false)
+
+    const [pollData, setPollData]       = useState()
+    const [pollTitle, setPollTitle]     = useState()
+    const [selected, setSelected]       = useState(-1)
     const socketRef = useRef()
 
 
@@ -56,6 +61,47 @@ export default function Room(props) {
             }
             setData((oldArray) => [...oldArray, newQuestion])
         });
+
+
+        //poll stuff
+
+        //creating this so i can re-use the socket id
+        socketRef.current.on("SendPoll", (data) => {
+            setPollData(data.pollData)
+            if(data.selected !== undefined){
+                setSelected(data.selected)
+            }
+        })
+
+        //sends nothing to let server know to make server send poll to host.
+        let password = cookie.load("adminPassword" + roomId + "")
+        
+       
+        socketRef.current.emit("setSocketIdHost", {adminPassword: password})
+
+        socketRef.current.on("SendPollHost", (data) => {
+            setDidPost(true)
+            
+
+            if(data.pollData != undefined){
+                setPollData(data.pollData)
+                
+            }
+
+            if(data.selected != undefined){
+                setSelected(data.selected)
+            }
+
+            if(data.pollTitle != undefined){
+                setPollTitle(data.pollTitle)
+                
+            }
+        })
+
+        //in case device disconnects, such as when a phone leaves?/closes a browser or closing your laptop.
+        socketRef.current.on("disconnect", () => {
+            window.location.reload(true)
+        })
         
     }, [])
 
@@ -86,6 +132,13 @@ export default function Room(props) {
                 roomId: roomId,
             })
         })
+    }
+
+    const handleSubmit = (index) => {
+        console.log(index);
+        let password = cookie.load("adminPassword" + roomId + "")
+        socketRef.current.emit("sendPollAnswerHost", {choice: index, adminPassword: password})
+
     }
 
 
@@ -138,7 +191,11 @@ export default function Room(props) {
                     </table>
                 </div>
                 <div className="container-fluid border-start p-4 col-12 col-md-4 order-first order-md-last">
-                        <CreatePoll roomId={roomId}/>
+                {
+                    !didPost 
+                    ? <CreatePoll roomId={roomId} onPost={() => setDidPost(true)}/>
+                    : <HostPoll roomId={roomId} pollData={pollData} pollTitle={pollTitle} handleSubmit={handleSubmit} selected={selected}/>
+                }
                 </div>
             </div>
             

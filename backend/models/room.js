@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const RoomSchema = new mongoose.Schema({
 
     roomId:{
-        type: String, //LJSH
+        type: String, //LJSH 
         require: true
     },
     // deprecated: used elsewhere for performance
@@ -18,6 +18,11 @@ const RoomSchema = new mongoose.Schema({
     adminSocketId:{ //this is used to know which socket to send data to.
         type: String,
         require: false
+    },
+    adminSelected:{
+        type: Number,
+        required: true,
+        default: -1
     },
     // passwordList: { //deprecated
     //     type: Array,

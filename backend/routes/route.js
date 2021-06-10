@@ -58,6 +58,10 @@ router.post("/createroom/", async(req, res) => {
         "SHIT",
         "HOES",
         "FAGG",
+        "FAGS",
+        "DONG",
+        "HORE",
+        "AIDS",
         "PISS",
         "ANUS",
         "TITS",
@@ -67,6 +71,10 @@ router.post("/createroom/", async(req, res) => {
         "PUSS",
         "PUSY",
         "PUSI",  
+        "CUMS",
+        "CUMZ",
+        "JQRY", 
+        
         "TEST", //used for dev purposes.
     ]
     let roomCode

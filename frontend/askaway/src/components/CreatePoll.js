@@ -13,11 +13,13 @@ export default function (props) {
         ]
     )
 
-    const [pollTitle, setPollTitle] = useState("")
-    const [, update] = useState()
-    const [newInput, setNewInput] = useState("")
-    const [pollInfo, setPollInfo] = useState("d-none")
-    const [checkbox, setCheckbox] = useState(false)
+    const [pollTitle, setPollTitle]         = useState("")
+    const [, update]                        = useState()
+    const [newInput, setNewInput]           = useState("")
+    const [pollInfo, setPollInfo]           = useState("d-none")
+    const [message, setMessage]             = useState()
+    const [messageClass, SetMessageClass]   = useState()
+    
 
     
     
@@ -35,10 +37,25 @@ export default function (props) {
 
         socketRef.current.on("message", (data) => {
             console.log(data)
+            if(data.success !== true){
+                setMessage(data.msg)
+                SetMessageClass("text-danger")
+                return
+            }
+            
+            props.onPost()
+
         })
+
+       
 	}, [])
 
     const handleDelete = (i) => {
+        if(pollData.length < 3){
+            setMessage("You need at least 2 options.")
+            SetMessageClass("text-danger")
+            return 
+        }
         let newData = pollData
         newData.splice(i, 1)
         setPollData(newData)
@@ -50,6 +67,11 @@ export default function (props) {
         if(newInput == ""){
             return;
         }
+        if(pollData.length > 9){
+            setMessage("You can max have 10 options.")
+            SetMessageClass("text-danger")
+            return 
+        }
         let newData = pollData;
         newData.push(newInput);
         setPollData(newData)
@@ -58,10 +80,22 @@ export default function (props) {
     }
 
     const handlePost = () =>{
-        console.log(pollData)
-        console.log(props.roomId)
-        console.log(checkbox)
-        socketRef.current.emit("postPoll", {pollData: pollData, pollTitle: pollTitle, checkbox: checkbox, password: cookie.load("adminPassword" + props.roomId + ""), })
+        //frontend validation:
+        let stop
+        pollData.forEach((option) => {
+            if(option == ""){
+                setMessage("No options can be empty.")
+                SetMessageClass("text-danger")
+                stop = true
+                return
+            }
+           
+        })
+        
+        if(stop) return
+        props.onPost()
+        
+        socketRef.current.emit("postPoll", {pollData: pollData, pollTitle: pollTitle, password: cookie.load("adminPassword" + props.roomId + ""), })
     }
 
     
@@ -73,12 +107,12 @@ export default function (props) {
             <p className="text-center">
                 Create an anonymous poll for everyone to vote
             </p>
-            <input className="form-control fw-bold" placeholder="Poll title" onChange={(e) => {setPollTitle(e.target.value)}}></input>
+            <input className="form-control fw-bold" placeholder="Poll title" maxLength="50" onChange={(e) => {setPollTitle(e.target.value)}}></input>
             {
                 pollData && pollData.map((entry, index) => {
                     return(
                         <div className="input-group my-2" key={index}>   
-                            <input placeholder={"Option " + (index +1)  } className="form-control" value={entry}  onChange={(e) => {
+                            <input placeholder={"Option " + (index +1)  } maxLength="50" className="form-control" value={entry}  onChange={(e) => {
                                
                                 // setPollData(pollData => pollData[index] = "test" ) 
                                
@@ -129,24 +163,12 @@ export default function (props) {
                 </button>
 
             </div>
+
+            <div className={"text-center " + messageClass}>
+                {message}
+            </div>
             
             <div className="text-center">
-                <div className="form-switch mb-3">
-                    <input className="form-check-input " type="checkbox" value="" id="flexCheckDefault" onClick={(e) => {setCheckbox(e.target.checked)}}/>
-                    <label className="form-check-label ps-2" htmlFor="flexCheckDefault" >
-                        Lock poll 
-                    </label>
-                    <span 
-                    onClick={() => {setPollInfo("")}} 
-                    className="text-primary p-2" 
-                    ><u>?</u></span>
-                    
-                </div>
-                <p className={pollInfo}>
-                    Locking the poll will prevent users who joins the room after the poll has been published from participating. 
-                    Everyone can see the results.
-                </p>
-
                 <button onClick={handlePost} id="btnAskQuestion" className="btn btn-outline-primary mt-3 px-4" type="button">Publish!</button>
             </div>
 
