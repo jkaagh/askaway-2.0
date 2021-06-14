@@ -44,7 +44,7 @@ export default function (props) {
         
         {props.pollData != undefined &&
             <div>
-                <h4 className=" text-center m-auto">{props.pollTitle}</h4>
+                <h4 className=" text-center m-auto pb-3 text-2xl">{props.pollTitle}</h4>
                 {props.pollData && props.pollData.map((item, index) => {
                         // console.log(item.value, totalVotes)
                         let number = Math.round(item.value / totalVotes * 100)

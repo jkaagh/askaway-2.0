@@ -22,6 +22,11 @@ body{
     @apply text-6xl font-light pb-3;
 }
 
+.inputFont{
+    @apply tracking-widest;
+    
+}
+
 .btn-link{
     @apply text-primary-400 font-bold underline outline-none focus:outline-none px-4 py-2
 }
@@ -37,6 +42,21 @@ body{
     @apply focus:shadow-lg;
     @apply transition duration-75   ease-in ;
     @apply ring-1 ring-transparent;
-    @apply bg-dark
+    @apply bg-dark;
 }
 
+.customTable{
+    @apply w-full border border-primary-200 rounded;
+}
+
+th, td{
+    @apply border border-primary-600 p-2
+}
+
+tr{
+    @apply bg-[#1f1f24]
+}
+
+.cum:nth-child(even){
+    @apply bg-transparent
+}

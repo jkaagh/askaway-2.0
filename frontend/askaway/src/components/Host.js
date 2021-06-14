@@ -152,7 +152,7 @@ export default function Room(props) {
     return (
     <div className="container " id="QuestionsContainer">
         <div className="container">
-            <h3 className="pt-4 text-center ">Room Code: <u>{props.match.params.id}</u></h3>
+            <h3 className="pt-4 text-center text-3xl ">Room Code: <u>{props.match.params.id}</u></h3>
             
             <div className="text-center w-md-50 m-auto">
                 <span className={classList}>
@@ -162,34 +162,38 @@ export default function Room(props) {
 
             <div className="row">
                 <div className="container-fluid border-right p-4 col-12 col-md-8">
-                    <h4 className=" text-center m-auto">Questions</h4>
-                    <p className="text-center">
+                    <h4 className=" text-center m-auto text-2xl">Questions</h4>
+                    <p className="text-center pb-3">
                         View all questions, user ID's and shadowban.
                     </p>    
-                    <table className="table table-striped table-bordered text-left customTable">
-                        <tbody id="tableBody">
-                            <tr>
-                                <th className="text-center" width="50px">#</th>
-                                <th className="text-center" width="50px">ID</th>
-                                <th className="px-3">Question</th>
-                                <th className="text-center" width="50px">Ban</th>
-                            </tr>
-                            {data && data.map((question, index) => {
-                                return(
-                                    <tr key={index}>
-                                        <td className="text-center"> {index + 1}</td>
-                                        <td className="text-center">{question.userId}</td>
-                                        <td className="text-left px-3">{question.question}</td>
-                                        <td onClick={() => handleBanClick(question.userId)} className="text-center">
-                                            <div>
-                                                <img alt="ban user" src={BanHammer}></img>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                )
-                            })}
-                        </tbody>
-                    </table>
+                    <div className="">
+                        <table className="rounded border border-primary-400 customTable">
+                            <tbody class="cum">
+                                <tr className="cum">
+                                    <th className="text-center" width="50px">#</th>
+                                    <th className="text-center" width="50px">ID</th>
+                                    <th className="px-3">Question</th>
+                                    <th className="text-center" width="50px">Ban</th>
+                                </tr>
+                                {data && data.map((question, index) => {
+                                    return(
+                                        <tr className="cum" key={index}>
+                                            <td className="text-center"> {index + 1}</td>
+                                            <td className="text-center">{question.userId}</td>
+                                            <td className="text-left px-3">{question.question}</td>
+                                            <td onClick={() => handleBanClick(question.userId)} className="text-center">
+                                                <div>
+                                                    <img alt="ban user" src={BanHammer}></img>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    )
+                                })}
+                            </tbody>
+                        </table>
+
+                    </div>
+
                 </div>
                 <div className="container-fluid border-start p-4 col-12 col-md-4 order-first order-md-last">
                 {

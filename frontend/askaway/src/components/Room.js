@@ -93,8 +93,8 @@ export default function Room(props) {
     return (
         <div className="container text-center" id="QuestionsContainer">
             <div className="container">
-                <h3 className="pt-4">Room Code: <u>{roomId}</u></h3>
-                <h4 className="pb-4">Your ID: <u>{userId}</u></h4>
+                <h3 className="pt-4 text-3xl">Room Code: <u>{roomId}</u></h3>
+                <h4 className="pb-4 text-2xl">Your ID: <u>{userId}</u></h4>
                     <div className="row">
                         <div className={"container-fluid border-right p-4 col-12 " + showPoll}>
                         <textarea 

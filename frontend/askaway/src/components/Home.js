@@ -107,6 +107,7 @@ export default function Home() {
     //save captcha value to post into server
     const handleCaptcha = (value) => {
         setCaptchaValue(value)
+
     }
 
     return (
@@ -115,7 +116,7 @@ export default function Home() {
                 <h1 className="title">Askaway</h1>
                 {/* <h1 className="display-4 d-sm-none text-wrap">Askaway</h1> */}
 
-                <h4 className="font-bold">The free service that lets you ask anonymous questions live.</h4>
+                <h4 className="text-xl pb-2">The free service that lets you ask anonymous questions live.</h4>
                 <a href="readmore" id="" className="btn-link">Read more</a>
 
             </div>
@@ -127,15 +128,24 @@ export default function Home() {
             <div className="container w-sm-50">
                 <input 
                 maxLength="4"
-                onChange={(e) => handleChange(e.target.value)}
+                onChange={(e) => {
+                    setInputValue(e.target.value.toUpperCase())
+                    if(e.target.value !== ""){
+                        e.target.classList.add("inputFont")
+                    }
+                    else{
+                        e.target.classList.remove("inputFont")
+                    }
+                }}
                 onKeyPress={(e) => {
                     if(e.key === "Enter"){
                         handleJoin()
                         
                     }
+                    
                 }} 
                 value={inputValue} id="codeInput" 
-                className="form-control text-center customInput" 
+                className="form-control text-center customInput " 
                 type="text" placeholder="Type room code here to join" 
                 name="askawayInput" 
                 />
