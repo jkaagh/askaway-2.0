@@ -37,12 +37,14 @@ export default function (props) {
 
         socketRef.current.on("message", (data) => {
             console.log(data)
+            
             if(data.success !== true){
+                
                 setMessage(data.msg)
                 SetMessageClass("text-danger")
                 return
             }
-            
+            console.log("asd")
             props.onPost()
 
         })
@@ -118,11 +120,11 @@ export default function (props) {
                                
                                 
                                 let newData = [...pollData]
-                                console.log(newData);
+                               
                                 newData[index] = e.target.value
                                 setPollData(newData)
                                 
-                                console.log(pollData)
+                                
                             }}></input>
                             <button style={{width: "38px"}} tabIndex="-1" className="btn btn-outline-danger" onClick={
                                 () => handleDelete(index)

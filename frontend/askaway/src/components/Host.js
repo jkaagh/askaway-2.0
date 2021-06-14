@@ -80,6 +80,7 @@ export default function Room(props) {
         socketRef.current.emit("setSocketIdHost", {adminPassword: password})
 
         socketRef.current.on("SendPollHost", (data) => {
+           
             setDidPost(true)
             
 
@@ -135,7 +136,7 @@ export default function Room(props) {
     }
 
     const handleSubmit = (index) => {
-        console.log(index);
+        
         let password = cookie.load("adminPassword" + roomId + "")
         socketRef.current.emit("sendPollAnswerHost", {choice: index, adminPassword: password})
 

@@ -464,6 +464,12 @@ io.on("connection", function(socket){
         
         socket.emit("message", {success: true, msg: "Poll successfully published!"})
         
+        //send to host
+        io.to(admin[0].adminSocketId).emit("SendPollHost", {
+            pollData: newPollData,
+            pollTitle: data.pollTitle
+        })
+
         //if a host creates a poll while no users have joined yet, he sends the poll to all users in an empty array
         //which socket.io interprets as everyone.
         if(userSocketIds.length === 0){ 
@@ -475,11 +481,8 @@ io.on("connection", function(socket){
            pollTitle: data.pollTitle
         })
         
-        //send to host
-        io.to(admin[0].adminSocketId).emit("SendPollHost", {
-            pollData: newPollData,
-            pollTitle: data.pollTitle
-        })
+        
+
         
         
 

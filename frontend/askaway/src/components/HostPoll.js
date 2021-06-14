@@ -41,11 +41,12 @@ export default function (props) {
     return(
         <div>
         
+        
         {props.pollData != undefined &&
             <div>
                 <h4 className=" text-center m-auto">{props.pollTitle}</h4>
                 {props.pollData && props.pollData.map((item, index) => {
-                        console.log(item.value, totalVotes)
+                        // console.log(item.value, totalVotes)
                         let number = Math.round(item.value / totalVotes * 100)
                         {/* if(number == 99){
                             number = 100;   

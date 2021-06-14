@@ -52,6 +52,21 @@ export default function ReadMore() {
                 As a room host, you have the ability to shadowban people. This means you won't see any of their questions, and they won't know they're banned.
             
             </p>
+
+
+            <h5>
+                About the poll system
+            </h5>
+
+            <p className="readmoreText d-none d-sm-block">
+
+                As a room host, you can create a polls for everyone, including yourself, in the room to anonymously vote in. 
+                
+            </p>
+            <p className="d-sm-none">
+            As a room host, you can create a polls for everyone, including yourself, in the room to anonymously vote in.
+            
+            </p>
             <CookieLaw/>
         </div>
     )
