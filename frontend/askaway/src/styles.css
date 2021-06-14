@@ -9,4 +9,34 @@ svg {
   height: 100%;
   overflow: hidden;
 }
-/*# sourceMappingURL=styles.css.map */
+
+body{
+    background: #2e2e35;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.title{
+    @apply text-6xl font-light pb-3;
+}
+
+.btn-link{
+    @apply text-primary-400 font-bold underline outline-none focus:outline-none px-4 py-2
+}
+
+.btn-primary{
+    @apply bg-primary-400 text-dark rounded px-6 py-1 font-bold;
+    @apply focus:outline-none shadow focus:shadow-lg transition duration-100 ease-in
+}
+
+.form-control{
+    @apply outline-none focus:outline-none;
+    @apply border border-primary-400 rounded py-2 px-4 w-full sm:w-5/6 text-primary-300 focus:shadow-inner focus:ring-1 focus:ring-primary-400;
+    @apply focus:shadow-lg;
+    @apply transition duration-75   ease-in ;
+    @apply ring-1 ring-transparent;
+    @apply bg-dark
+}
+

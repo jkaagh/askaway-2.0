@@ -110,13 +110,13 @@ export default function Home() {
     }
 
     return (
-        <div className="container text-center ">
+        <div className="container text-center px-6">
             <div className="container pb-4">
-                <h1 className="display-3 d-none d-sm-inline text-wrap">Askaway</h1>
-                <h1 className="display-4 d-sm-none text-wrap">Askaway</h1>
+                <h1 className="title">Askaway</h1>
+                {/* <h1 className="display-4 d-sm-none text-wrap">Askaway</h1> */}
 
-                <h4 className="">The free service that lets you ask anonymous questions live.</h4>
-                <a href="readmore" id="" className="alert-link">Read more</a>
+                <h4 className="font-bold">The free service that lets you ask anonymous questions live.</h4>
+                <a href="readmore" id="" className="btn-link">Read more</a>
 
             </div>
 
@@ -126,6 +126,7 @@ export default function Home() {
 
             <div className="container w-sm-50">
                 <input 
+                maxLength="4"
                 onChange={(e) => handleChange(e.target.value)}
                 onKeyPress={(e) => {
                     if(e.key === "Enter"){
@@ -139,7 +140,7 @@ export default function Home() {
                 name="askawayInput" 
                 />
 
-                <div className="container d-flex flex-wrap justify-content-center mt-4">
+                <div className="container flex flex-wrap justify-center mt-4">
                     <ReCaptcha
                         sitekey="6LdqX4saAAAAAC3Cie6ilnn6ujzvKuiMm2tjYeWG"
                         onChange={handleCaptcha}
@@ -147,7 +148,7 @@ export default function Home() {
                     /> 
 
                 </div>
-                <span className="text-danger d-block">
+                <span className="text-red-600 block">
                     {captchaWarning}
                 </span>
 
