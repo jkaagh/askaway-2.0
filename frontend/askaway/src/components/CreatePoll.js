@@ -105,8 +105,8 @@ export default function (props) {
 
     return(
         <div className="">
-            <h4 className=" text-center m-auto">Create poll</h4>
-            <p className="text-center">
+            <h4 className=" text-center m-auto text-2xl">Create poll</h4>
+            <p className="text-center pb-3">
                 Create an anonymous poll for everyone to vote
             </p>
             <input className="form-control fw-bold" placeholder="Poll title" maxLength="50" onChange={(e) => {setPollTitle(e.target.value)}}></input>

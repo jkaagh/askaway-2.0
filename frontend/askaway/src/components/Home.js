@@ -107,16 +107,17 @@ export default function Home() {
     //save captcha value to post into server
     const handleCaptcha = (value) => {
         setCaptchaValue(value)
+
     }
 
     return (
-        <div className="container text-center ">
+        <div className="container text-center px-6">
             <div className="container pb-4">
-                <h1 className="display-3 d-none d-sm-inline text-wrap">Askaway</h1>
-                <h1 className="display-4 d-sm-none text-wrap">Askaway</h1>
+                <h1 className="title">Askaway</h1>
+                {/* <h1 className="display-4 d-sm-none text-wrap">Askaway</h1> */}
 
-                <h4 className="">The free service that lets you ask anonymous questions live.</h4>
-                <a href="readmore" id="" className="alert-link">Read more</a>
+                <h4 className="text-xl pb-2">The free service that lets you ask anonymous questions live.</h4>
+                <a href="readmore" id="" className="btn-link">Read more</a>
 
             </div>
 
@@ -126,20 +127,30 @@ export default function Home() {
 
             <div className="container w-sm-50">
                 <input 
-                onChange={(e) => handleChange(e.target.value)}
+                maxLength="4"
+                onChange={(e) => {
+                    setInputValue(e.target.value.toUpperCase())
+                    if(e.target.value !== ""){
+                        e.target.classList.add("inputFont")
+                    }
+                    else{
+                        e.target.classList.remove("inputFont")
+                    }
+                }}
                 onKeyPress={(e) => {
                     if(e.key === "Enter"){
                         handleJoin()
                         
                     }
+                    
                 }} 
                 value={inputValue} id="codeInput" 
-                className="form-control text-center customInput" 
+                className="form-control text-center customInput " 
                 type="text" placeholder="Type room code here to join" 
                 name="askawayInput" 
                 />
 
-                <div className="container d-flex flex-wrap justify-content-center mt-4">
+                <div className="container flex flex-wrap justify-center mt-4">
                     <ReCaptcha
                         sitekey="6LdqX4saAAAAAC3Cie6ilnn6ujzvKuiMm2tjYeWG"
                         onChange={handleCaptcha}
@@ -147,7 +158,7 @@ export default function Home() {
                     /> 
 
                 </div>
-                <span className="text-danger d-block">
+                <span className="text-red-600 block">
                     {captchaWarning}
                 </span>
 

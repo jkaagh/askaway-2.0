@@ -70,7 +70,7 @@ export default function Poll(props) {
         <div className="">
             { showPoll &&
                 <div>
-                    <h4 className=" text-center m-auto">{pollTitle}</h4>
+                    <h4 className=" text-center m-auto pb-3 text-2xl">{pollTitle}</h4>
                     {pollData && pollData.map((item, index) => {
                         {/* console.log(item.value, totalVotes) */}
                         let number = Math.round(item.value / totalVotes * 100)

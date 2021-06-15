@@ -5,9 +5,11 @@ import Room from "./components/Room"
 import Host from "./components/Host"
 import ReadMore from "./components/ReadMore"
 import Analytics from "./components/Analytics"
+import "./styles.css"
+
 function App() {
   return (
-    <div className="App">
+    <div className="App text-gray-200">
         <Switch>
             <Route exact path="/" component={Home}/>
             <Route path="/room/:id" component={Room}/>
