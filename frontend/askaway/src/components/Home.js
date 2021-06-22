@@ -111,7 +111,7 @@ export default function Home() {
     }
 
     return (
-        <div className="container text-center px-6">
+        <div className="container text-center sm:w-5/6 px-6">
             <div className="container pb-4">
                 <h1 className="title">Askaway</h1>
                 {/* <h1 className="display-4 d-sm-none text-wrap">Askaway</h1> */}

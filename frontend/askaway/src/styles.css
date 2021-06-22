@@ -28,17 +28,17 @@ body{
 }
 
 .btn-link{
-    @apply text-primary-400 font-bold underline outline-none focus:outline-none px-4 py-2
+    @apply text-primary-400 font-bold underline outline-none focus:outline-none px-4 py-2;
 }
 
 .btn-primary{
     @apply bg-primary-400 text-dark rounded px-6 py-1 font-bold;
-    @apply focus:outline-none shadow focus:shadow-lg transition duration-100 ease-in
+    @apply focus:outline-none shadow focus:shadow-lg transition duration-100 ease-in;
 }
 
 .form-control{
     @apply outline-none focus:outline-none;
-    @apply border border-primary-400 rounded py-2 px-4 w-full sm:w-5/6 text-primary-300 focus:shadow-inner focus:ring-1 focus:ring-primary-400;
+    @apply border border-primary-400 rounded py-2 px-4 w-full text-primary-300 focus:shadow-inner focus:ring-1 focus:ring-primary-400;
     @apply focus:shadow-lg;
     @apply transition duration-75   ease-in ;
     @apply ring-1 ring-transparent;
@@ -50,13 +50,21 @@ body{
 }
 
 th, td{
-    @apply border border-primary-600 p-2
+    @apply border border-primary-600 p-2;
 }
 
 tr{
-    @apply bg-[#1f1f24]
+    @apply bg-[#1f1f24];
 }
 
-.cum:nth-child(even){
-    @apply bg-transparent
+.customRows:nth-child(even){
+    @apply bg-transparent;
+}
+
+.input-group>input{
+    @apply !text-gray-200 border-r-0 rounded-r-none;
+}
+
+.input-group>button{
+    @apply border border-primary-400 h-[42px] rounded-r
 }

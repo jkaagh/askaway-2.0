@@ -150,9 +150,9 @@ export default function Room(props) {
     const handleShow = () => setShow(true);
     
     return (
-    <div className="container " id="QuestionsContainer">
+    <div className="container sm:w-5/6 " id="QuestionsContainer">
         <div className="container">
-            <h3 className="pt-4 text-center text-3xl ">Room Code: <u>{props.match.params.id}</u></h3>
+            <h3 className="pt-4 text-center text-3xl pb-4 ">Room Code: <u>{props.match.params.id}</u></h3>
             
             <div className="text-center w-md-50 m-auto">
                 <span className={classList}>
@@ -160,16 +160,16 @@ export default function Room(props) {
                 </span>
             </div>
 
-            <div className="row">
-                <div className="container-fluid border-right p-4 col-12 col-md-8">
+            <div className="flex flex-wrap justify-center">
+                <div className="container-fluid border-right lg:w-4/6 w-full px-6">
                     <h4 className=" text-center m-auto text-2xl">Questions</h4>
                     <p className="text-center pb-3">
                         View all questions, user ID's and shadowban.
                     </p>    
                     <div className="">
                         <table className="rounded border border-primary-400 customTable">
-                            <tbody class="cum">
-                                <tr className="cum">
+                            <tbody class="customRows">
+                                <tr className="customRows">
                                     <th className="text-center" width="50px">#</th>
                                     <th className="text-center" width="50px">ID</th>
                                     <th className="px-3">Question</th>
@@ -177,7 +177,7 @@ export default function Room(props) {
                                 </tr>
                                 {data && data.map((question, index) => {
                                     return(
-                                        <tr className="cum" key={index}>
+                                        <tr className="customRows" key={index}>
                                             <td className="text-center"> {index + 1}</td>
                                             <td className="text-center">{question.userId}</td>
                                             <td className="text-left px-3">{question.question}</td>
@@ -195,7 +195,7 @@ export default function Room(props) {
                     </div>
 
                 </div>
-                <div className="container-fluid border-start p-4 col-12 col-md-4 order-first order-md-last">
+                <div className="container-fluid border-start lg:w-2/6 w-full px-6">
                 {
                     !didPost 
                     ? <CreatePoll roomId={roomId} onPost={() => setDidPost(true)}/>

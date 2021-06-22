@@ -70,8 +70,8 @@ export default function (props) {
             return;
         }
         if(pollData.length > 9){
-            setMessage("You can max have 10 options.")
-            SetMessageClass("text-danger")
+            setMessage("You can only have a maximum of 10 options.")
+            SetMessageClass("text-red-600")
             return 
         }
         let newData = pollData;
@@ -87,7 +87,7 @@ export default function (props) {
         pollData.forEach((option) => {
             if(option == ""){
                 setMessage("No options can be empty.")
-                SetMessageClass("text-danger")
+                SetMessageClass("text-red-600")
                 stop = true
                 return
             }
@@ -113,7 +113,7 @@ export default function (props) {
             {
                 pollData && pollData.map((entry, index) => {
                     return(
-                        <div className="input-group my-2" key={index}>   
+                        <div className="input-group w-full my-2" key={index}>   
                             <input placeholder={"Option " + (index +1)  } maxLength="50" className="form-control" value={entry}  onChange={(e) => {
                                
                                 // setPollData(pollData => pollData[index] = "test" ) 
@@ -136,7 +136,7 @@ export default function (props) {
                 })
 
             }
-            <div className="input-group mb-2">   
+            <div className="input-group my-2">   
 
                 <input placeholder="Add new" className="form-control" 
                 onChange={(e) => {setNewInput(e.target.value)}} 
@@ -148,7 +148,7 @@ export default function (props) {
                 value={newInput}
                 ></input>
 
-                <button style={{width: "38px"}} tabIndex="-1" className="btn btn-outline-primary p-0" onClick={handleAddNew}>
+                <button style={{width: "38px"}} tabIndex="-1" className="btn btn-outline-primary" onClick={handleAddNew}>
                    
                     <svg  viewBox="0 0 40 40">
                         <rect
