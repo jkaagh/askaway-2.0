@@ -24,7 +24,7 @@ router.post("/createroom/", async(req, res) => {
         req.body.captcha === null
     ){
         if(!devMode.enabled){
-            return res.send({success: false, msg: "Please complete captcha"})
+            return res.send({success: false, msg: "Please complete captcha."})
         }
 
     }
@@ -43,7 +43,7 @@ router.post("/createroom/", async(req, res) => {
 
     if(body.success !== true){
         if(!devMode.enabled){
-            return res.send({success: false, msg: "Failed to complete captcha."})
+            return res.send({success: false, msg: "Please complete captcha."})
         }
     }
     //if everything worked out, run this:
@@ -53,7 +53,10 @@ router.post("/createroom/", async(req, res) => {
         "FUCK",
         "NIGG",
         "NIGA",
+        "NIGR",
         "JEWS",
+        "JEWZ",
+        "FAGT",
         "RAPE",
         "SHIT",
         "HOES",
@@ -134,7 +137,7 @@ router.post("/joinroom/", async(req, res) =>{
         req.body.captcha === null
     ){
         if(!devMode.enabled){
-            return res.send({success: false, msg: "Please complete captcha"})
+            return res.send({success: false, msg: "Please complete captcha."})
         }
     }
     const query = stringify({
@@ -153,7 +156,7 @@ router.post("/joinroom/", async(req, res) =>{
     if(body.success !== true){
 
         if(!devMode.enabled){            
-            return res.send({success: false, msg: "Failed to complete captcha."})
+            return res.send({success: false, msg: "Please complete captcha."})
         }
     }
 

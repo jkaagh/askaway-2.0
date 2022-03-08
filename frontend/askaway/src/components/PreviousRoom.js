@@ -20,7 +20,7 @@ export default function PreviousRoom() {
                         <p className="mt-4 mb-0">
                             It looks like you already created room {prevRoomCookie}
                         </p>
-                        <button onClick={handleJoin} className="btn btn-link alert-link">Join {prevRoomCookie}</button>
+                        <button onClick={handleJoin} className="btn btn-link alert-link">Join {prevRoomCookie} as host</button>
            
                     </div>
                 </div>

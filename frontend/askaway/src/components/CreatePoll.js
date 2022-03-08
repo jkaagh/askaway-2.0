@@ -36,7 +36,7 @@ export default function (props) {
 		});
 
         socketRef.current.on("message", (data) => {
-            console.log(data)
+            // console.log(data)
             
             if(data.success !== true){
                 
@@ -84,6 +84,14 @@ export default function (props) {
     const handlePost = () =>{
         //frontend validation:
         let stop
+
+        if(pollTitle == "" || pollTitle == undefined){
+            setMessage("You must have a title.")
+            SetMessageClass("text-danger")
+            stop = true
+            return
+        }
+
         pollData.forEach((option) => {
             if(option == ""){
                 setMessage("No options can be empty.")

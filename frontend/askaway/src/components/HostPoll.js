@@ -51,6 +51,9 @@ export default function (props) {
                         {/* if(number == 99){
                             number = 100;   
                         } */}
+                        if(totalVotes == 0){
+                            number = 0;
+                        }
                         let enableBorder;
                         if(index === props.selected){
                             enableBorder = "border-primary"

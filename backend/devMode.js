@@ -1,12 +1,12 @@
 
 
 let devMode = {
-    enabled: true
+    enabled: false
 }
 
 const analPassword = process.env.ANALYTICS_PASSWORD
 
-if( analPassword != undefined){
+if( analPassword != undefined){ //which means it is on the public server.
     devMode.enabled = false;
 }
 

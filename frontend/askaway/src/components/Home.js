@@ -30,21 +30,24 @@ export default function Home() {
         
     }
 
+    let captcha;
+    
+    const setCaptchaRef = (ref) => {
+        if(ref){
+            return captcha = ref;
+        }
+    }
+
     const handleCreate = () => {
         setCreateText("Loading...")
 
         Axios.post(address + "/createroom", { captcha: captchaValue, })
             .then((response) => {
                 if (response.data.success === false) {
-                    setCaptchaWarning(response.data.msg)
-                    console.log(response.data)
-                    setCreateText("Or create a room...  ")
-
-
-                      //shitty workaround that reloads page if you stumble upon this bug. because their docs suck ass.
-                    if(captchaValue == "ass"){
-                        window.location.reload()
-                    }
+                     //when this runs the captcha will have been used and must be resubmitted, therefore run reset:
+                     captcha.reset()
+                     setCaptchaWarning(response.data.msg)
+                     setCreateText("Or create a room...  ")
                 }
                 setCaptchaValue("ass")
                 
@@ -65,6 +68,7 @@ export default function Home() {
                 //redirect to subpage todo
             })
     }
+    
 
     const handleJoin = () => {
         setJoinText("Loading...");
@@ -74,19 +78,16 @@ export default function Home() {
         Axios.post(address + "/joinroom", { captcha: captchaValue, existingPassword: existingPassword, room: inputValue })
         // Axios.post("https://askawayapp.herokuapp.com/joinroom", { captcha: captchaValue, existingPassword: existingPassword, room: inputValue })
             .then((response) => {
-                
+                console.log(response.data)
                 if (response.data.success === false) {
+                    
+                    //when this runs the captcha will have been used and must be resubmitted, therefore run reset:
+                    captcha.reset()
                     setCaptchaWarning(response.data.msg)
                     setJoinText("Join")
-                    
-                    //shitty workaround that reloads page if you stumble upon this bug. because their docs suck ass.
-                    if(captchaValue == "reload"){
-                        window.location.reload()
-                    }
-                    
+                            
                 }
-                setCaptchaValue("reload")
-                
+                            
                 if (response.data.newPassword !== undefined) { //this runs if user sent wrong or no password
                     let d = new Date();
                     let time = d.getTime()
@@ -138,11 +139,12 @@ export default function Home() {
                 type="text" placeholder="Type room code here to join" 
                 name="askawayInput" 
                 />
-
+               
                 <div className="container d-flex flex-wrap justify-content-center mt-4">
                     <ReCaptcha
                         sitekey="6LdqX4saAAAAAC3Cie6ilnn6ujzvKuiMm2tjYeWG"
                         onChange={handleCaptcha}
+                        ref={(r) => setCaptchaRef(r)}
                         
                     /> 
 
